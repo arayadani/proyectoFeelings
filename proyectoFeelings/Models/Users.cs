@@ -6,6 +6,6 @@ namespace proyectoFeelings.Models
 
     {
         public string FullName { get; set; }
-        public string AccessLevel { get; set; }
+       // public string AccessLevel { get; set; }
     }
 }

@@ -44,7 +44,7 @@ namespace proyectoFeelings.Services
                         SecurityStamp = Guid.NewGuid().ToString()
 
                     };
-                    var result = await userManager.CreateAsync(adminUser, "Dani123.");
+                    var result = await userManager.CreateAsync(adminUser, "Dani1234.");
                     if (result.Succeeded)
                     {
                         logger.LogInformation("Usuario admin creado exitosamente.");
@@ -76,9 +76,9 @@ namespace proyectoFeelings.Services
                 }
                     else
                     {
-                        // Log errors if needed
+
                     }
-                }
+            }
 
             }
     }
