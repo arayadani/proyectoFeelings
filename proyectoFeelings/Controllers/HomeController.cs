@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using proyectoFeelings.Models;
 using System.Diagnostics;
@@ -11,10 +12,24 @@ namespace proyectoFeelings.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Privacy()
         {
             return View();
         }
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult Admin()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin,User")]
+        public IActionResult User()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

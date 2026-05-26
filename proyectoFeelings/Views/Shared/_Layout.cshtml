@@ -13,7 +13,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">proyectoFeelings</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Tienda Feelings</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,16 +21,33 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Fabrizio</a>
-                        </li>
+                        <!--  <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Privacy" asp-action="Privacy">Privacy</a>
+                        </li> -->
+                        @if (User.IsInRole("Admin"))     // si el usuario es admin me muestra ambas vistas
+
+                            {
+                         <li class="nav-item">
+
+                                <a class="nav-link" asp-controller="Home" asp-action="Admin">Administrador</a>
+
+                         </li>
+                            
+                             }
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("User"))  // si el usuario es colaborador me muestra la vista de colaborador 
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Home" asp-action="User">Colaborador</a>
+                                </li>
+                            }
+
+                        <partial name="_LoginPartial" />    <!-- referencia la parte del login(login y register) -->
                     </ul>
                 </div>
+
             </div>
         </nav>
     </header>
