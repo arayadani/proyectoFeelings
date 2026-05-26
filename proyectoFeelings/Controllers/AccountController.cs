@@ -32,13 +32,25 @@ namespace proyectoFeelings.Controllers
 
             }
             var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if(result.Succeeded)
+            if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home");
             }
-            ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+            ModelState.AddModelError(string.Empty, "Error al iniciar sesion");
             return View(model);
 
+
         }
-    }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+     }
+
 }

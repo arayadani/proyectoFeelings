@@ -28,7 +28,7 @@ namespace proyectoFeelings.Services
                 await addRoleAsync(roleManager, "Admin");
                 await addRoleAsync(roleManager, "User");
 
-                //anadir usuarios
+                //anadir usuario admin
                 logger.LogInformation("Verificando usuarios...");
                 var adminEmail = "admin@gmail.com";
                 if (await userManager.FindByEmailAsync(adminEmail) == null) // validacion para no insertar usuario admin si ya existe
@@ -53,6 +53,34 @@ namespace proyectoFeelings.Services
                     else
                     {
                         logger.LogError("Error al crear el usuario admin: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+
+                    }
+
+                }
+                //anadir usuario User
+                var userEmail = "user@gmail.com";
+                if (await userManager.FindByEmailAsync(userEmail) == null) // validacion para no insertar usuario admin si ya existe
+                {
+                    var userUser = new Users
+                    {
+                        FullName = "Dani2",
+                        UserName = userEmail,
+                        NormalizedUserName = userEmail.ToUpper(),
+                        Email = userEmail,
+                        NormalizedEmail = userEmail.ToUpper(),
+                        EmailConfirmed = false,
+                        SecurityStamp = Guid.NewGuid().ToString()
+
+                    };
+                    var result = await userManager.CreateAsync(userUser, "Dani1234.");
+                    if (result.Succeeded)
+                    {
+                        logger.LogInformation("Usuario de colaborador creado exitosamente.");
+                        await userManager.AddToRoleAsync(userUser, "User");
+                    }
+                    else
+                    {
+                        logger.LogError("Error al crear el usuario de colaborador: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
 
                     }
 

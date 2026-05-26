@@ -23,10 +23,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
-                        <li class="nav-item">
+                        <!--  <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Privacy" asp-action="Privacy">Privacy</a>
-                        </li>
-                         <partial name="_LoginPartial" />    <!-- referencia la parte del login(login y register) -->
+                        </li> -->
+                        @if (User.IsInRole("Admin"))     // si el usuario es admin me muestra ambas vistas
+
+                            {
+                         <li class="nav-item">
+
+                                <a class="nav-link" asp-controller="Home" asp-action="Admin">Administrador</a>
+
+                         </li>
+                            
+                             }
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("User"))  // si el usuario es colaborador me muestra la vista de colaborador 
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Home" asp-action="User">Colaborador</a>
+                                </li>
+                            }
+
+                        <partial name="_LoginPartial" />    <!-- referencia la parte del login(login y register) -->
                     </ul>
                 </div>
 
