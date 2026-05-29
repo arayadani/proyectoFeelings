@@ -37,10 +37,7 @@ namespace proyectoFeelings.Services
                     {
                         FullName = "Dani",
                         UserName = adminEmail,
-                        NormalizedUserName = adminEmail.ToUpper(),
                         Email = adminEmail,
-                        NormalizedEmail = adminEmail.ToUpper(),
-                        EmailConfirmed = true,
                         SecurityStamp = Guid.NewGuid().ToString()
 
                     };
@@ -65,10 +62,7 @@ namespace proyectoFeelings.Services
                     {
                         FullName = "Dani2",
                         UserName = userEmail,
-                        NormalizedUserName = userEmail.ToUpper(),
                         Email = userEmail,
-                        NormalizedEmail = userEmail.ToUpper(),
-                        EmailConfirmed = false,
                         SecurityStamp = Guid.NewGuid().ToString()
 
                     };
