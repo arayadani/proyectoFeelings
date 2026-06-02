@@ -13,7 +13,7 @@ namespace proyectoFeelings.Services
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Users>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedServices>>();
 
 
@@ -33,12 +33,13 @@ namespace proyectoFeelings.Services
                 var adminEmail = "admin@gmail.com";
                 if (await userManager.FindByEmailAsync(adminEmail) == null) // validacion para no insertar usuario admin si ya existe
                 {
-                    var adminUser = new Users
+                    var adminUser = new User
                     {
                         FullName = "Dani",
                         UserName = adminEmail,
                         Email = adminEmail,
                         SecurityStamp = Guid.NewGuid().ToString()
+
 
                     };
                     var result = await userManager.CreateAsync(adminUser, "Dani1234.");
@@ -58,7 +59,7 @@ namespace proyectoFeelings.Services
                 var userEmail = "user@gmail.com";
                 if (await userManager.FindByEmailAsync(userEmail) == null) // validacion para no insertar usuario admin si ya existe
                 {
-                    var userUser = new Users
+                    var userUser = new User
                     {
                         FullName = "Dani2",
                         UserName = userEmail,

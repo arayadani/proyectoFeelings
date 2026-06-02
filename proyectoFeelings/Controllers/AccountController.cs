@@ -7,10 +7,10 @@ namespace proyectoFeelings.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SignInManager<Users> signInManager;
-        private readonly UserManager<Users> userManager;
+        private readonly SignInManager<User> signInManager;
+        private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
-        public AccountController(SignInManager<Users> signInManager, UserManager<Users> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
