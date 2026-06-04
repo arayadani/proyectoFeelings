@@ -11,8 +11,14 @@ namespace proyectoFeelings.Data
         {
         }
 
-        public DbSet<Product> Products { get; set; }
+        public DbSet<Product> Product { get; set; }
         public DbSet<Store> Store { get; set; }
+        public DbSet<Record> Record { get; set; }
+
+        public DbSet<Invoice> Invoice { get; set; }
+        public DbSet<StoreProduct> StoreProduct { get; set; }
+
+
 
     }
 }
