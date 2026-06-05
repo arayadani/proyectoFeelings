@@ -11,6 +11,8 @@ namespace proyectoFeelings.Models
         public string? Provider { get; set; }
         public bool Status { get; set; }
         public string Category { get; set; }
+        public ICollection<StoreProduct> StoreProduct { get; set; }  
+
 
     }
 }

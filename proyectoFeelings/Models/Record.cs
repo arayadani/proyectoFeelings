@@ -7,19 +7,23 @@ namespace proyectoFeelings.Models
     {
         [Key]
         public int RecordId { get; set; }
-        public int Cantidad { get; set; }
+        public int Quantity { get; set; }
 
-        [ForeignKey("Product")]
-        public int ProductID { get; set; }
+        //[ForeignKey("Product")]
+        //public int ProductID { get; set; }
         public string Comment { get; set; }
         public int Type { get; set; }
         public DateTime DateTime { get; set; }
 
-        [ForeignKey("Store")]
-        public int CurrentStoreID { get; set; }
+        //[ForeignKey("Store")]
+        //public int CurrentStoreID { get; set; }
 
-        [ForeignKey("Store")]
+       // [ForeignKey("Store")]
         public int? NewStoreID { get; set; }
+
+        [ForeignKey("StoreID,ProductID")]
+        public StoreProduct StoreProduct { get; set; }
+
 
     }
 }

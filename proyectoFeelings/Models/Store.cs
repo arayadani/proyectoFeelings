@@ -12,6 +12,8 @@ namespace proyectoFeelings.Models
         public string Location { get; set; }
         public bool Status { get; set; }
         public ICollection<User> Users { get; set; }
+        public ICollection<StoreProduct> StoreProduct { get; set; }
+
 
 
     }

@@ -15,7 +15,7 @@ namespace proyectoFeelings.Data
         public DbSet<Store> Store { get; set; }
         public DbSet<Record> Record { get; set; }
 
-        public DbSet<Invoice> Invoice { get; set; }
+       // public DbSet<Invoice> Invoice { get; set; }
         public DbSet<StoreProduct> StoreProduct { get; set; }
 
 

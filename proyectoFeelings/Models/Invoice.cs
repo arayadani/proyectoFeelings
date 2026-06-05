@@ -5,18 +5,23 @@ namespace proyectoFeelings.Models
 {
     public class Invoice
     {
-     [Key]
-     public int InvoiceId { get; set; }
+        [Key]
+        public int InvoiceId { get; set; }
 
-     [ForeignKey("Product")]
-     public int ProductID { get; set; }
+        [ForeignKey("Store")]
+        public int StoreID { get; set; }
 
-     [ForeignKey("Store")]
-     public int StoreID { get; set; }
+        [ForeignKey("Product")]
 
-     public int Price { get; set; }
-      
-     public DateTime Datetime { get; set; }
+        public int Price { get; set; }
 
+        public DateTime Datetime { get; set; }
+        public Store Store { get; set; }
+
+
+        [ForeignKey("Product")]
+
+        public ICollection<StoreProduct> StoreProduct { get; set; }
     }
+    
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyectoFeelings.Data;
 
@@ -11,9 +12,11 @@ using proyectoFeelings.Data;
 namespace proyectoFeelings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260605043727_migration17")]
+    partial class migration17
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,6 +200,9 @@ namespace proyectoFeelings.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CurrentStoreID")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
@@ -209,7 +215,10 @@ namespace proyectoFeelings.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("StoreID")
+                    b.Property<int>("StoreProductProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreProductStoreID")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")
@@ -217,7 +226,7 @@ namespace proyectoFeelings.Migrations
 
                     b.HasKey("RecordId");
 
-                    b.HasIndex("StoreID", "ProductID");
+                    b.HasIndex("StoreProductStoreID", "StoreProductProductID");
 
                     b.ToTable("Record");
                 });
@@ -403,7 +412,7 @@ namespace proyectoFeelings.Migrations
                 {
                     b.HasOne("proyectoFeelings.Models.StoreProduct", "StoreProduct")
                         .WithMany()
-                        .HasForeignKey("StoreID", "ProductID")
+                        .HasForeignKey("StoreProductStoreID", "StoreProductProductID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
