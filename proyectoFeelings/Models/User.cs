@@ -7,9 +7,9 @@ namespace proyectoFeelings.Models
     public class User : IdentityUser
 
     {
-        [Key]
-        [NotMapped] // no mapee este campo en la base de datos, porq ya existe 
-        public string Id { get; set; }
+        //  [Key]
+        //  public string Id { get; set; }
+        //estan para mi referencia para no olvidar que el Id ya viene incluido en IdentityUser
         public string FullName { get; set; }
         public bool AdminAccess { get; set; }
         public bool Status { get; set; }

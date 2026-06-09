@@ -43,6 +43,7 @@ namespace proyectoFeelings.Services
 
                     };
                     var result = await userManager.CreateAsync(adminUser, "Dani1234.");
+
                     if (result.Succeeded)
                     {
                         logger.LogInformation("Usuario admin creado exitosamente.");
@@ -61,6 +62,7 @@ namespace proyectoFeelings.Services
                 {
                     var userUser = new User
                     {
+                     
                         FullName = "Dani2",
                         UserName = userEmail,
                         Email = userEmail,
