@@ -29,3 +29,37 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+#sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: linear-gradient( 180deg, #0a2a66, #4d0057 );
+    transition: all 0.3s ease;
+}
+
+.sidebar-header {
+    color: white;
+    font-size: 20px;
+    padding: 20px;
+    font-weight: bold;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .sidebar-menu li a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        padding: 15px 20px;
+    }
+
+        .sidebar-menu li a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+.sidebar-hidden {
+    margin-left: -250px;
+}

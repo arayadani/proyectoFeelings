@@ -1,0 +1,39 @@
+﻿<div id="sidebar">
+
+    <div class="sidebar-header">
+        Tienda Feelings
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a asp-controller="Home" asp-action="Index">
+                Inicio
+            </a>
+        </li>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <li>
+                <a asp-controller="Home" asp-action="Admin">
+                    Administrador
+                </a>
+            </li>
+        }
+
+        @if (User.IsInRole("Admin") || User.IsInRole("User"))
+        {
+            <li>
+                <a asp-controller="Home" asp-action="User">
+                    Colaborador
+                </a>
+            </li>
+        }
+        <div>
+            <partial name="_LoginPartial" />
+        </div>
+
+    </ul>
+
+
+</div>

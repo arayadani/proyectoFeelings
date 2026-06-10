@@ -10,61 +10,46 @@
     <link rel="stylesheet" href="~/proyectoFeelings.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Tienda Feelings</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    <div class="d-flex">
+
+        @await Html.PartialAsync("_Sidebar")
+
+        <div id="content" class="flex-grow-1">
+
+            <nav class="navbar bg-light border-bottom">
+
+                <button id="menuBtn"
+                        class="btn btn-primary">
+                    ☰
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
-                        </li>
-                        <!--  <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Privacy" asp-action="Privacy">Privacy</a>
-                        </li> -->
-                        @if (User.IsInRole("Admin"))     // si el usuario es admin me muestra ambas vistas
 
-                            {
-                         <li class="nav-item">
+            </nav>
 
-                                <a class="nav-link" asp-controller="Home" asp-action="Admin">Administrador</a>
-
-                         </li>
-                            
-                             }
-
-                        @if (User.IsInRole("Admin") || User.IsInRole("User"))  // si el usuario es colaborador me muestra la vista de colaborador 
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Home" asp-action="User">Colaborador</a>
-                                </li>
-                            }
-
-                        <partial name="_LoginPartial" />    <!-- referencia la parte del login(login y register) -->
-                    </ul>
-                </div>
-
+            <div class="container mt-3">
+                @RenderBody()
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+            <footer class="border-top footer text-muted mt-5">
+                <div class="container">
+                    &copy; 2026 - ProyectoFeelings
+                </div>
+            </footer>
+
+        </div>
+
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ProyectoFeelings
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        document.getElementById("menuBtn")
+        .addEventListener("click", function () {
+
+        document.getElementById("sidebar")
+        .classList.toggle("sidebar-hidden");
+        });
+    </script>
 </body>
 </html>
