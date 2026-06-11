@@ -51,6 +51,11 @@ namespace proyectoFeelings.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-     }
+        [HttpGet]
+        public IActionResult EditUser()
+        {
+            return View();
+        }
+    }
 
 }
