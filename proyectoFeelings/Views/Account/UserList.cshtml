@@ -1,0 +1,24 @@
+﻿@model List<proyectoFeelings.Models.User>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>FullName</th>
+            <th>AdminAccess</th>
+            <th>Status</th>
+            <th>StoreID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.AdminAccess</td>
+                <td>@user.Status</td>
+                <td>@user.StoreID</td>
+
+            </tr>
+        }
+    </tbody>
+</table>

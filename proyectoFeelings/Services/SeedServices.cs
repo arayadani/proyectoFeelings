@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;       
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
@@ -27,19 +28,31 @@ namespace proyectoFeelings.Services
                 logger.LogInformation("Verificando roles...");
                 await addRoleAsync(roleManager, "Admin");
                 await addRoleAsync(roleManager, "User");
+                //anadir store
+
+                var Store1 = new Store
+                {
+                    StoreName = "Multicentro",
+                    PhoneNumber = "2211-3030",
+                    Location = "San Jose, Desamparados",
+                    Status = true
+                };
+                context.Store.Add(Store1);
+                await context.SaveChangesAsync();
 
                 //anadir usuario admin
                 logger.LogInformation("Verificando usuarios...");
                 var adminEmail = "admin@gmail.com";
                 if (await userManager.FindByEmailAsync(adminEmail) == null) // validacion para no insertar usuario admin si ya existe
                 {
+
                     var adminUser = new User
                     {
                         FullName = "Dani",
                         UserName = adminEmail,
                         Email = adminEmail,
-                        SecurityStamp = Guid.NewGuid().ToString()
-
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                       // StoreID = Store.StoreID,
 
                     };
                     var result = await userManager.CreateAsync(adminUser, "Dani1234.");
@@ -82,6 +95,9 @@ namespace proyectoFeelings.Services
                     }
 
                 }
+                var Store = await context.Store.FirstOrDefaultAsync();
+                logger.LogInformation("Verificando stores...");
+                logger.LogInformation(Store.StoreID.ToString()); 
             }
             catch (Exception ex)
             {
