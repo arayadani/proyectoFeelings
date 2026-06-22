@@ -3,10 +3,12 @@
 <table class="table">
     <thead>
         <tr>
-            <th>FullName</th>
-            <th>AdminAccess</th>
-            <th>Status</th>
-            <th>StoreID</th>
+            <th>Nomnre completo</th>
+            <th>Correo</th>
+            <th>Tipo de usuario</th>
+            <th>Estado</th>
+            <th>Tienda</th>
+            <th>Numero de telefono</th>
         </tr>
     </thead>
     <tbody>
@@ -14,10 +16,11 @@
         {
             <tr>
                 <td>@user.FullName</td>
-                <td>@user.AdminAccess</td>
-                <td>@user.Status</td>
+                <td>@user.Email</td>
+                <td>@(user.AdminAccess ? "Administrador" : "Colaborador")</td>
+                <td>@(user.Status ? "Activo" : "Inactivo")</td>
                 <td>@user.StoreID</td>
-
+                <td>@user.PhoneNumber</td>
             </tr>
         }
     </tbody>

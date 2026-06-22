@@ -59,6 +59,7 @@ namespace proyectoFeelings.Controllers
         [HttpGet]
         public IActionResult EditUser()
         {
+            //var users = _context.Users.ToList();
             return View();
         }
         [HttpGet]

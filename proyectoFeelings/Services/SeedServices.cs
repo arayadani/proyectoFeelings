@@ -28,18 +28,22 @@ namespace proyectoFeelings.Services
                 logger.LogInformation("Verificando roles...");
                 await addRoleAsync(roleManager, "Admin");
                 await addRoleAsync(roleManager, "User");
-                //anadir store
 
-                var Store1 = new Store
-                {
-                    StoreName = "Multicentro",
-                    PhoneNumber = "2211-3030",
-                    Location = "San Jose, Desamparados",
-                    Status = true
-                };
-                context.Store.Add(Store1);
-                await context.SaveChangesAsync();
+                logger.LogInformation("Verificando tiendas...");
 
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2) == null)
+                {                                                                           //anadir store
+
+                    var Store1 = new Store
+                    {
+                        StoreName = "Multicentro",
+                        PhoneNumber = "2211-3030",
+                        Location = "San Jose, Desamparados",
+                        Status = true
+                    };
+                    context.Store.Add(Store1);
+                    await context.SaveChangesAsync();
+                }
                 //anadir usuario admin
                 logger.LogInformation("Verificando usuarios...");
                 var adminEmail = "admin@gmail.com";
@@ -52,7 +56,7 @@ namespace proyectoFeelings.Services
                         UserName = adminEmail,
                         Email = adminEmail,
                         SecurityStamp = Guid.NewGuid().ToString(),
-                       // StoreID = Store.StoreID,
+                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID
 
                     };
                     var result = await userManager.CreateAsync(adminUser, "Dani1234.");
@@ -79,7 +83,9 @@ namespace proyectoFeelings.Services
                         FullName = "Dani2",
                         UserName = userEmail,
                         Email = userEmail,
-                        SecurityStamp = Guid.NewGuid().ToString()
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID
+
 
                     };
                     var result = await userManager.CreateAsync(userUser, "Dani1234.");

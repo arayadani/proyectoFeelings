@@ -1,4 +1,6 @@
 ﻿@model proyectoFeelings.Models.User
+<!--model List<proyectoFeelings.Models.User>-->
+
 
 @{
     ViewData["Title"] = "Editar Usuario";
@@ -7,6 +9,20 @@
 <h3>Editar Usuario</h3>
 
 <form asp-action="Edit" method="post">
+
+    <!--
+    <label>Seleccione usuario</label>
+    <select name="userId" class="form-control"> 
+        <option value="">Seleccione un usuario</option>
+        foreach (var user in Model)
+        {
+            <option value="user.Id">user.FullName</option>
+        }
+    </select>
+    -->
+
+
+
 
     <input type="hidden" asp-for="Id" />
 
