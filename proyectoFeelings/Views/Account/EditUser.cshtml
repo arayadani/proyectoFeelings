@@ -1,6 +1,4 @@
 ﻿@model proyectoFeelings.Models.User
-<!--model List<proyectoFeelings.Models.User>-->
-
 
 @{
     ViewData["Title"] = "Editar Usuario";
@@ -8,21 +6,7 @@
 
 <h3>Editar Usuario</h3>
 
-<form asp-action="Edit" method="post">
-
-    <!--
-    <label>Seleccione usuario</label>
-    <select name="userId" class="form-control"> 
-        <option value="">Seleccione un usuario</option>
-        foreach (var user in Model)
-        {
-            <option value="user.Id">user.FullName</option>
-        }
-    </select>
-    -->
-
-
-
+<form asp-action="EditUser" method="post">
 
     <input type="hidden" asp-for="Id" />
 
@@ -36,6 +20,11 @@
         <label asp-for="Email" class="form-label">Correo electronico</label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="PhoneNumber" class="form-label">Numero de telefono</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="StoreID" class="form-label">Tienda</label>
@@ -56,7 +45,7 @@
 
     <div class="form-check mb-3">
         <input asp-for="Status" class="form-check-input" />
-        <label asp-for="Status" class="form-check-label">Desactivar usuario</label>
+        <label asp-for="Status" class="form-check-label">Usuario activo</label>
     </div>
 
     
@@ -65,7 +54,7 @@
         Guardar cambios
     </button>
 
-    <a asp-action="Index" class="btn btn-secondary">
+    <a asp-action="UserList" class="btn btn-secondary">
         Cancelar
     </a>
 

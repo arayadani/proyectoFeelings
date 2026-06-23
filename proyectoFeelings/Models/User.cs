@@ -8,7 +8,7 @@ namespace proyectoFeelings.Models
 
     {
         //  [Key]
-        //  public string Id { get; set; }
+      //  public string Id { get; set; }
         //estan para mi referencia para no olvidar que el Id ya viene incluido en IdentityUser
         public string FullName { get; set; }
         public bool AdminAccess { get; set; }
