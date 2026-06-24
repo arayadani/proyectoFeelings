@@ -31,7 +31,7 @@ namespace proyectoFeelings.Services
 
                 logger.LogInformation("Verificando tiendas...");
 
-                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2) == null)
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 11) == null)
                 {                                                                           //anadir store
 
                     var Store1 = new Store

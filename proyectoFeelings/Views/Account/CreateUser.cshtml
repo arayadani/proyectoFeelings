@@ -1,0 +1,43 @@
+﻿@model proyectoFeelings.ViewModels.CreateUserViewModel
+
+<h2>Crear Usuario</h2>
+
+<form asp-action="CreateUser" method="post">
+
+    <div class="mb-3">
+        <label asp-for="FullName">Nombre completo</label>
+        <input asp-for="FullName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email">Correo electronico</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Contraseña</label>
+        <input name="password" type="password" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Tienda</label>
+        <select asp-for="StoreId"
+                asp-items="Model.Stores"
+                class="form-control">
+            <option value="">Seleccione la tienda</option>
+        </select>
+    </div>
+    <div class="form-check">
+        <input asp-for="AdminAccess" class="form-check-input" />
+        <label asp-for="AdminAccess" class="form-check-label">Acceso de administrador</label>
+    </div>
+    <div class="form-check">
+        <input asp-for="Status" class="form-check-input" />
+        <label asp-for="Status" class="form-check-label">Usuario Inactivo</label>
+    </div>
+    <br />
+
+    <button type="submit" class="btn btn-primary">
+        Crear Usuario
+    </button>
+
+</form>

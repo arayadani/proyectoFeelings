@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
@@ -122,8 +123,64 @@ namespace proyectoFeelings.Controllers
             }
             Console.WriteLine("Error al actualizar el usuario");
             return View(model);
-        }
 
+
+        }
+        // get: account/createuser
+        public async Task<IActionResult> CreateUser()
+        {
+            var model = new CreateUserViewModel();
+
+            model.Stores = await _context.Store
+                .Select(s => new SelectListItem
+                {
+                    Value = s.StoreID.ToString(),
+                    Text = s.StoreName
+                })
+                .ToListAsync();
+
+            return View(model);
+        }
+      // post: account/createuser
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        {
+            Console.WriteLine("Revisar");
+           // if (!ModelState.IsValid)
+           // {
+//Console.WriteLine("Revisar2");
+
+          //      ViewBag.Stores = await _context.Store.ToListAsync();
+              //  return View(model);
+
+          //  }
+
+            var user = new User
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FullName = model.FullName,
+                AdminAccess = model.AdminAccess,
+                StoreID = model.StoreId
+            };
+
+            var result = await userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(UserList));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            ViewBag.Stores = await _context.Store.ToListAsync();
+
+            return View(model);
+        }
     }
 
 }
