@@ -71,19 +71,47 @@ namespace proyectoFeelings.Controllers
                 return NotFound();
 
             }
-            return View(user);
+         //   return View(user);
+            var model = new UserViewModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                AdminAccess = user.AdminAccess,
+                Status = user.Status,
+                StoreId = (int)user.StoreID,
+                // Add any other properties your ViewModel contains
+            };
+
+            return View(model);
         }
         [HttpGet]
         public IActionResult UserList()
         {
-            var users = _context.Users.ToList();
+            var users = _context.Users
+        .Select(u => new UserViewModel
+        {
+            Id = u.Id,
+            FullName = u.FullName,
+            Email = u.Email,
+            PhoneNumber = u.PhoneNumber,
+            Status = u.Status,
+            AdminAccess = u.AdminAccess,
+            StoreId = (int)u.StoreID,
+
+        })
+        .ToList();
+
             return View(users);
+            //var users = _context.Users.ToList();
+            //  return View(users);
         }
         // post: account/edituser/<userId>
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUser(User model)
+        public async Task<IActionResult> EditUser(UserViewModel model)
         {
           //  if (!ModelState.IsValid)
            // {
@@ -104,7 +132,7 @@ namespace proyectoFeelings.Controllers
             user.Email = model.Email;
             user.UserName = model.Email; // si el username es un correo
             user.AdminAccess = model.AdminAccess;
-            user.StoreID = model.StoreID;
+            user.StoreID = model.StoreId;
             user.Status = model.Status;
             user.PhoneNumber = model.PhoneNumber;
 
@@ -114,6 +142,28 @@ namespace proyectoFeelings.Controllers
             if (result.Succeeded)
             {
                 Console.WriteLine("Usuario actualizado correctamente");
+                var currentRole = (await userManager.GetRolesAsync(user))
+                    .FirstOrDefault();
+                //   Console.WriteLine($"Rol actual del usuario: {currentRole}");
+
+                if (model.AdminAccess == true)
+                {
+                    if (!string.IsNullOrEmpty(currentRole))
+                    {
+                        await userManager.RemoveFromRoleAsync(user, currentRole);
+                    }
+
+                    await userManager.AddToRoleAsync(user, "Admin");
+
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(currentRole))
+                    {
+                        await userManager.RemoveFromRoleAsync(user, currentRole);
+                    }
+                    await userManager.AddToRoleAsync(user, "User");
+                }
                 return RedirectToAction(nameof(UserList));
             }
 
@@ -129,7 +179,7 @@ namespace proyectoFeelings.Controllers
         // get: account/createuser
         public async Task<IActionResult> CreateUser()
         {
-            var model = new CreateUserViewModel();
+            var model = new UserViewModel();
 
             model.Stores = await _context.Store
                 .Select(s => new SelectListItem
@@ -141,45 +191,60 @@ namespace proyectoFeelings.Controllers
 
             return View(model);
         }
-      // post: account/createuser
+        // post: account/createuser
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        public async Task<IActionResult> CreateUser(UserViewModel model)
         {
-            Console.WriteLine("Revisar");
-           // if (!ModelState.IsValid)
-           // {
-//Console.WriteLine("Revisar2");
-
-          //      ViewBag.Stores = await _context.Store.ToListAsync();
-              //  return View(model);
-
-          //  }
-
-            var user = new User
+            if (await userManager.FindByEmailAsync(model.Email) == null)
             {
-                UserName = model.Email,
-                Email = model.Email,
-                FullName = model.FullName,
-                AdminAccess = model.AdminAccess,
-                StoreID = model.StoreId
-            };
+                var user = new User
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    AdminAccess = model.AdminAccess,
+                    StoreID = model.StoreId,
+                    PhoneNumber = model.PhoneNumber,
+                    Status = model.Status,
 
-            var result = await userManager.CreateAsync(user, model.Password);
+                };
 
-            if (result.Succeeded)
-            {
+                var result = await userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    if (model.AdminAccess)
+                    {
+                        await userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    else
+                    {
+                        await userManager.AddToRoleAsync(user, "User");
+                    }
+                    TempData["SuccessMessage"] = "Usuario creado correctamente";
+                    return RedirectToAction(nameof(UserList));
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                ViewBag.Stores = await _context.Store.ToListAsync();
+                TempData["ErrorMessage"] = "Error al crear el usuario";
+
                 return RedirectToAction(nameof(UserList));
-            }
 
-            foreach (var error in result.Errors)
+
+            }
+            else
             {
-                ModelState.AddModelError("", error.Description);
+
+                TempData["ErrorMessage"] = "Error al crear el usuario, el correo ya existe";
+                return RedirectToAction(nameof(UserList));
+
             }
-
-            ViewBag.Stores = await _context.Store.ToListAsync();
-
-            return View(model);
         }
     }
 

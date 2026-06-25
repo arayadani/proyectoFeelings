@@ -1,4 +1,4 @@
-﻿@model proyectoFeelings.Models.User
+﻿@model proyectoFeelings.ViewModels.UserViewModel
 
 @{
     ViewData["Title"] = "Editar Usuario";
@@ -27,16 +27,16 @@
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="StoreID" class="form-label">Tienda</label>
-        <input asp-for="StoreID" class="form-control" />
+        <label asp-for="StoreId" class="form-label">Tienda</label>
+        <input asp-for="StoreId" class="form-control" />
     </div>
-  <!--  <div class="mb-3">
+     <div class="mb-3">
         <label asp-for="Password" class="form-label">Contraseña</label>
         <input asp-for="Password" class="form-control" />
         <span asp-validation-for="Password" class="text-danger"></span>
 
     </div>
-    -->
+    
     <div class="form-check mb-3">
         <input asp-for="AdminAccess" class="form-check-input" />
         <label asp-for="AdminAccess" class="form-check-label">Acceso de administrador</label>

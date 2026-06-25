@@ -1,4 +1,4 @@
-﻿@model proyectoFeelings.ViewModels.CreateUserViewModel
+﻿@model proyectoFeelings.ViewModels.UserViewModel
 
 <h2>Crear Usuario</h2>
 
@@ -13,11 +13,16 @@
         <label asp-for="Email">Correo electronico</label>
         <input asp-for="Email" class="form-control" />
     </div>
+    <div class="mb-3">
+        <label asp-for="PhoneNumber">Numero de telefono</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+    </div>
 
     <div class="mb-3">
         <label>Contraseña</label>
         <input name="password" type="password" class="form-control" />
     </div>
+
     <div class="mb-3">
         <label>Tienda</label>
         <select asp-for="StoreId"
@@ -32,7 +37,7 @@
     </div>
     <div class="form-check">
         <input asp-for="Status" class="form-check-input" />
-        <label asp-for="Status" class="form-check-label">Usuario Inactivo</label>
+        <label asp-for="Status" class="form-check-label">Usuario activo</label>
     </div>
     <br />
 

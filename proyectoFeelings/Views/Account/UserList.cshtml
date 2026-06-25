@@ -1,4 +1,25 @@
-﻿@model List<proyectoFeelings.Models.User>
+﻿@model List<proyectoFeelings.ViewModels.UserViewModel>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
 
 <table class="table">
     <thead>
@@ -19,7 +40,7 @@
                 <td>@user.Email</td>
                 <td>@(user.AdminAccess ? "Administrador" : "Colaborador")</td>
                 <td>@(user.Status ? "Activo" : "Inactivo")</td>
-                <td>@user.StoreID</td>
+                <td>@user.StoreId</td>
                 <td>@user.PhoneNumber</td>
                 <td>
                     <a asp-controller="Account"
