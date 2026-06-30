@@ -26,10 +26,24 @@
         <input asp-for="PhoneNumber" class="form-control" />
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
+    <!--
+
     <div class="mb-3">
         <label asp-for="StoreId" class="form-label">Tienda</label>
         <input asp-for="StoreId" class="form-control" />
     </div>
+    -->
+
+    <div class="mb-3">
+        <label>Tienda</label>
+        <select asp-for="StoreId" class="form-control">
+            <option value="">Seleccione la tienda</option>
+            <option value="11">Multicentro</option>
+            <option value="2025">Terramall</option>
+            <option value="2026">San Sebastian</option>
+        </select>
+    </div>
+
      <div class="mb-3">
         <label asp-for="Password" class="form-label">Contraseña</label>
         <input asp-for="Password" class="form-control" />

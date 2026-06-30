@@ -40,7 +40,12 @@
                 <td>@user.Email</td>
                 <td>@(user.AdminAccess ? "Administrador" : "Colaborador")</td>
                 <td>@(user.Status ? "Activo" : "Inactivo")</td>
-                <td>@user.StoreId</td>
+                <td>
+                    @(user.StoreId == 11 ? "Multicentro" :
+                      user.StoreId == 2025 ? "Terramall" :
+                      user.StoreId == 2026 ? "San Sebastian" :
+                      "Unknown")
+                </td>
                 <td>@user.PhoneNumber</td>
                 <td>
                     <a asp-controller="Account"
@@ -48,6 +53,16 @@
                        asp-route-id="@user.Id"
                        class="btn btn-warning btn-sm">
                         Editar
+                    </a>
+
+                </td>
+
+                <td>
+                    <a asp-controller="Account"
+                       asp-action=""
+                       asp-route-id="@user.Id"
+                       class="btn btn-warning btn-sm">
+                        Borrar
                     </a>
 
                 </td>

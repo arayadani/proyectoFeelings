@@ -10,12 +10,16 @@
     </div>
 
     <ul class="sidebar-menu">
-
-        <li>
+        @if (signInManager.IsSignedIn(User))
+        {
+        
+            <li>
           <a asp-controller="Home" asp-action="Index">
                 Inicio
             </a>
         </li>
+        }
+        
          @if (User.IsInRole("Admin"))
         {
             <li>

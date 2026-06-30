@@ -44,6 +44,38 @@ namespace proyectoFeelings.Services
                     context.Store.Add(Store1);
                     await context.SaveChangesAsync();
                 }
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2025) == null)
+                {
+                    var Store2 = new Store
+                    {
+                        StoreName = "Terramall",
+                        PhoneNumber = "2211-9090",
+                        Location = "San Jose, Tres Rios",
+                        Status = true
+                    };
+                    context.Store.Add(Store2);
+                    await context.SaveChangesAsync();
+
+
+                }
+
+
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2026) == null)
+                {
+                    var Store3 = new Store
+                    {
+                        StoreName = "San Sebastian",
+                        PhoneNumber = "2211-5050",
+                        Location = "San Jose, San Sebastian",
+                        Status = true
+                    };
+                    context.Store.Add(Store3);
+                    await context.SaveChangesAsync();
+
+                }
+                
+
+
                 //anadir usuario admin
                 logger.LogInformation("Verificando usuarios...");
                 var adminEmail = "admin@gmail.com";
@@ -56,7 +88,10 @@ namespace proyectoFeelings.Services
                         UserName = adminEmail,
                         Email = adminEmail,
                         SecurityStamp = Guid.NewGuid().ToString(),
-                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID
+                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID,
+                        AdminAccess = true,
+                        Status = true,
+
 
                     };
                     var result = await userManager.CreateAsync(adminUser, "Dani1234.");
@@ -84,7 +119,9 @@ namespace proyectoFeelings.Services
                         UserName = userEmail,
                         Email = userEmail,
                         SecurityStamp = Guid.NewGuid().ToString(),
-                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID
+                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID,
+                        Status = true,
+
 
 
                     };

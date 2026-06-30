@@ -27,6 +27,7 @@ namespace proyectoFeelings.Controllers
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
 
@@ -37,6 +38,20 @@ namespace proyectoFeelings.Controllers
                 return View(model);
 
             }
+            
+               var user = await userManager.FindByEmailAsync(model.Email);
+               if (user == null)
+               {
+
+                   return NotFound();
+
+               }
+               if (!user.Status)
+               {
+                   return RedirectToAction("InactiveUser");
+
+               }
+           
             var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
@@ -59,7 +74,7 @@ namespace proyectoFeelings.Controllers
         }
         [HttpGet]
         // get: account/edituser/<userId>
-        public async Task <IActionResult> EditUser(String Id)
+        public async Task<IActionResult> EditUser(String Id)
         {
             if (Id == null)
             {
@@ -71,7 +86,7 @@ namespace proyectoFeelings.Controllers
                 return NotFound();
 
             }
-         //   return View(user);
+            //   return View(user);
             var model = new UserViewModel
             {
                 Id = user.Id,
@@ -113,13 +128,13 @@ namespace proyectoFeelings.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(UserViewModel model)
         {
-          //  if (!ModelState.IsValid)
-           // {
-               // Console.WriteLine("ModelState is not valid");
-               // return View(model);
+            //  if (!ModelState.IsValid)
+            // {
+            // Console.WriteLine("ModelState is not valid");
+            // return View(model);
 
-          //  }
-            var user = await userManager.FindByIdAsync(model.Id); 
+            //  }
+            var user = await userManager.FindByIdAsync(model.Id);
 
             if (user == null)
             {
@@ -246,6 +261,11 @@ namespace proyectoFeelings.Controllers
 
             }
         }
-    }
+        [HttpGet]
+        public IActionResult InactiveUser()
+        {
+            return View();
+        }
+    } 
 
-}
+    }
