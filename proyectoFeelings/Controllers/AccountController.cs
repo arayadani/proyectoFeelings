@@ -33,26 +33,26 @@ namespace proyectoFeelings.Controllers
 
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) //aqui valida si el modelo NO es valido y entra al if
             {
                 return View(model);
 
             }
             
-               var user = await userManager.FindByEmailAsync(model.Email);
+               var user = await userManager.FindByEmailAsync(model.Email); //le dice al usermanager que busque a un user por medio del correo y lo guarda en la variable user
                if (user == null)
                {
 
                    return NotFound();
 
                }
-               if (!user.Status)
+               if (!user.Status) // check si el status NO es true y devuelve la vista del inactive user
                {
                    return RedirectToAction("InactiveUser");
 
                }
            
-            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false); // crea la variable user y verifica que los variables matcheen con lo que ingresamos y entra o no al if
             if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home");
@@ -128,12 +128,7 @@ namespace proyectoFeelings.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(UserViewModel model)
         {
-            //  if (!ModelState.IsValid)
-            // {
-            // Console.WriteLine("ModelState is not valid");
-            // return View(model);
-
-            //  }
+        
             var user = await userManager.FindByIdAsync(model.Id);
 
             if (user == null)
@@ -266,6 +261,34 @@ namespace proyectoFeelings.Controllers
         {
             return View();
         }
-    } 
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUser(String id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Se elimino el usuario correctamente";
+                return RedirectToAction(nameof(UserList));
+            }
+
+            foreach (var error in result.Errors)
+            {
+               
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View(user);
+        }
     }
+
+}
