@@ -17,6 +17,10 @@ namespace proyectoFeelings.ViewModels
         public bool Status { get; set; }
         public string PhoneNumber { get; set; }
 
+        public string? NewPassword { get; set; }
+
+        public string? ConfirmPassword { get; set; }
+
 
 
         public List<SelectListItem> Stores { get; set; }

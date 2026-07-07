@@ -289,6 +289,55 @@ namespace proyectoFeelings.Controllers
 
             return View(user);
         }
-    }
 
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(UserViewModel model)
+        {
+            var user = await userManager.FindByIdAsync(model.Id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = await userManager.ResetPasswordAsync(user, token, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Contraseña editada correctamente";
+                return RedirectToAction(nameof(UserList));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+            model.Email = user.Email;
+            return View();
+        }
+        [HttpGet]
+
+        public async Task<IActionResult> ChangePassword(String id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new UserViewModel
+            {
+                Id = user.Id,
+                Email = user.Email
+            };
+
+            return View(model);
+        }
+
+    }
 }
+
+
