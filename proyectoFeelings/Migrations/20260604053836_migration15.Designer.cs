@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyectoFeelings.Data;
 
@@ -11,9 +12,11 @@ using proyectoFeelings.Data;
 namespace proyectoFeelings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260604053836_migration15")]
+    partial class migration15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,6 +158,31 @@ namespace proyectoFeelings.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("proyectoFeelings.Models.Invoice", b =>
+                {
+                    b.Property<int>("InvoiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"));
+
+                    b.Property<DateTime>("Datetime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StoreID")
+                        .HasColumnType("int");
+
+                    b.HasKey("InvoiceId");
+
+                    b.ToTable("Invoice");
+                });
+
             modelBuilder.Entity("proyectoFeelings.Models.Product", b =>
                 {
                     b.Property<int>("ProductID")
@@ -193,9 +221,15 @@ namespace proyectoFeelings.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecordId"));
 
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CurrentStoreID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
@@ -206,18 +240,10 @@ namespace proyectoFeelings.Migrations
                     b.Property<int>("ProductID")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StoreID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("RecordId");
-
-                    b.HasIndex("StoreID", "ProductID");
 
                     b.ToTable("Record");
                 });
@@ -262,8 +288,6 @@ namespace proyectoFeelings.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("StoreID", "ProductID");
-
-                    b.HasIndex("ProductID");
 
                     b.ToTable("StoreProduct");
                 });
@@ -399,36 +423,6 @@ namespace proyectoFeelings.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("proyectoFeelings.Models.Record", b =>
-                {
-                    b.HasOne("proyectoFeelings.Models.StoreProduct", "StoreProduct")
-                        .WithMany()
-                        .HasForeignKey("StoreID", "ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("StoreProduct");
-                });
-
-            modelBuilder.Entity("proyectoFeelings.Models.StoreProduct", b =>
-                {
-                    b.HasOne("proyectoFeelings.Models.Product", "Product")
-                        .WithMany("StoreProduct")
-                        .HasForeignKey("ProductID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("proyectoFeelings.Models.Store", "Store")
-                        .WithMany("StoreProduct")
-                        .HasForeignKey("StoreID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Store");
-                });
-
             modelBuilder.Entity("proyectoFeelings.Models.User", b =>
                 {
                     b.HasOne("proyectoFeelings.Models.Store", "Store")
@@ -438,15 +432,8 @@ namespace proyectoFeelings.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("proyectoFeelings.Models.Product", b =>
-                {
-                    b.Navigation("StoreProduct");
-                });
-
             modelBuilder.Entity("proyectoFeelings.Models.Store", b =>
                 {
-                    b.Navigation("StoreProduct");
-
                     b.Navigation("Users");
                 });
 #pragma warning restore 612, 618

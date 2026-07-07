@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;       
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
@@ -13,7 +14,7 @@ namespace proyectoFeelings.Services
 
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Users>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedServices>>();
 
 
@@ -28,23 +29,73 @@ namespace proyectoFeelings.Services
                 await addRoleAsync(roleManager, "Admin");
                 await addRoleAsync(roleManager, "User");
 
+                logger.LogInformation("Verificando tiendas...");
+
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 11) == null)
+                {                                                                           //anadir store
+
+                    var Store1 = new Store
+                    {
+                        StoreName = "Multicentro",
+                        PhoneNumber = "2211-3030",
+                        Location = "San Jose, Desamparados",
+                        Status = true
+                    };
+                    context.Store.Add(Store1);
+                    await context.SaveChangesAsync();
+                }
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2025) == null)
+                {
+                    var Store2 = new Store
+                    {
+                        StoreName = "Terramall",
+                        PhoneNumber = "2211-9090",
+                        Location = "San Jose, Tres Rios",
+                        Status = true
+                    };
+                    context.Store.Add(Store2);
+                    await context.SaveChangesAsync();
+
+
+                }
+
+
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2026) == null)
+                {
+                    var Store3 = new Store
+                    {
+                        StoreName = "San Sebastian",
+                        PhoneNumber = "2211-5050",
+                        Location = "San Jose, San Sebastian",
+                        Status = true
+                    };
+                    context.Store.Add(Store3);
+                    await context.SaveChangesAsync();
+
+                }
+                
+
+
                 //anadir usuario admin
                 logger.LogInformation("Verificando usuarios...");
                 var adminEmail = "admin@gmail.com";
                 if (await userManager.FindByEmailAsync(adminEmail) == null) // validacion para no insertar usuario admin si ya existe
                 {
-                    var adminUser = new Users
+
+                    var adminUser = new User
                     {
                         FullName = "Dani",
                         UserName = adminEmail,
-                        NormalizedUserName = adminEmail.ToUpper(),
                         Email = adminEmail,
-                        NormalizedEmail = adminEmail.ToUpper(),
-                        EmailConfirmed = true,
-                        SecurityStamp = Guid.NewGuid().ToString()
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID,
+                        AdminAccess = true,
+                        Status = true,
+
 
                     };
                     var result = await userManager.CreateAsync(adminUser, "Dani1234.");
+
                     if (result.Succeeded)
                     {
                         logger.LogInformation("Usuario admin creado exitosamente.");
@@ -61,15 +112,17 @@ namespace proyectoFeelings.Services
                 var userEmail = "user@gmail.com";
                 if (await userManager.FindByEmailAsync(userEmail) == null) // validacion para no insertar usuario admin si ya existe
                 {
-                    var userUser = new Users
+                    var userUser = new User
                     {
+                     
                         FullName = "Dani2",
                         UserName = userEmail,
-                        NormalizedUserName = userEmail.ToUpper(),
                         Email = userEmail,
-                        NormalizedEmail = userEmail.ToUpper(),
-                        EmailConfirmed = false,
-                        SecurityStamp = Guid.NewGuid().ToString()
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        StoreID = context.Store.FirstOrDefaultAsync().Result.StoreID,
+                        Status = true,
+
+
 
                     };
                     var result = await userManager.CreateAsync(userUser, "Dani1234.");
@@ -85,6 +138,9 @@ namespace proyectoFeelings.Services
                     }
 
                 }
+                var Store = await context.Store.FirstOrDefaultAsync();
+                logger.LogInformation("Verificando stores...");
+                logger.LogInformation(Store.StoreID.ToString()); 
             }
             catch (Exception ex)
             {

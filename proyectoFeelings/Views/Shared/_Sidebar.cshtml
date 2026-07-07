@@ -1,0 +1,64 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@inject SignInManager<User> signInManager;
+
+
+
+<div id="sidebar">
+
+    <div class="sidebar-header">
+        Tienda Feelings
+    </div>
+
+    <ul class="sidebar-menu">
+        @if (signInManager.IsSignedIn(User))
+        {
+        
+            <li>
+          <a asp-controller="Home" asp-action="Index">
+                Inicio
+            </a>
+        </li>
+        }
+        
+         @if (User.IsInRole("Admin"))
+        {
+            <li>
+                <a asp-controller="Home" asp-action="Admin">
+                    Administrador
+                </a>
+            </li>
+            <li>
+            <ul>
+                <li>
+                    <a asp-controller="Account" asp-action="CreateUser">
+                        Crear Usuario
+                    </a>
+                </li>
+                    <li>
+                        <a asp-controller="Account" asp-action="UserList">
+                            Ver Lista de Usuarios
+                        </a>
+                    </li>
+            </ul>
+        </li>
+        
+     
+
+        }
+
+        @if (User.IsInRole("Admin") || User.IsInRole("User"))
+        {
+            <li>
+                <a asp-controller="Home" asp-action="User">
+                    Colaborador
+                </a>
+            </li>
+        }
+        <div>
+            <partial name="_LoginPartial" />
+        </div>
+
+    </ul>
+
+
+</div>

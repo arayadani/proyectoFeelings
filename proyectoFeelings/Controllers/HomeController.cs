@@ -7,8 +7,10 @@ namespace proyectoFeelings.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+        
+
             return View();
         }
 
