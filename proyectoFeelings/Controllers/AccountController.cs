@@ -29,7 +29,7 @@ namespace proyectoFeelings.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken] //Falsificación de Peticiones entre Sitios
 
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -55,9 +55,9 @@ namespace proyectoFeelings.Controllers
             var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false); // crea la variable user y verifica que los variables matcheen con lo que ingresamos y entra o no al if
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home"); // que si se hizo el login correctamente redirige al controlador de home
             }
-            ModelState.AddModelError(string.Empty, "Error al iniciar sesion");
+            ModelState.AddModelError(string.Empty, "Error al iniciar sesion");// si no se hace el login correctamente manda un error
             return View(model);
 
 
@@ -65,7 +65,7 @@ namespace proyectoFeelings.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken] //valida que el token de seguridad sea valido y no se pueda hacer un ataque de tipo CSRF
 
         public async Task<IActionResult> Logout()
         {
@@ -76,7 +76,7 @@ namespace proyectoFeelings.Controllers
         // get: account/edituser/<userId>
         public async Task<IActionResult> EditUser(String Id)
         {
-            if (Id == null)
+            if (Id == null) 
             {
                 return NotFound();
             }

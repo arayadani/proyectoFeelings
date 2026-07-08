@@ -16,7 +16,7 @@ namespace proyectoFeelings.Models
         public int Price { get; set; }
 
         public DateTime Datetime { get; set; }
-        public Store Store { get; set; }
+        public Store Store { get; set; } // porq el framework lo pide 
 
 
         [ForeignKey("Product")]

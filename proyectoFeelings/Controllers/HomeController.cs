@@ -14,7 +14,7 @@ namespace proyectoFeelings.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize] // solo los usuarios autenticados pueden acceder a esta acción
         public IActionResult Privacy()
         {
             return View();
