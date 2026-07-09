@@ -18,6 +18,7 @@
                 Inicio
             </a>
         </li>
+
         }
         
          @if (User.IsInRole("Admin"))
@@ -51,6 +52,15 @@
             <li>
                 <a asp-controller="Home" asp-action="User">
                     Colaborador
+                </a>
+            </li>
+        
+        }
+        @if (User.IsInRole("User"))
+        {
+            <li>
+                <a asp-controller="Product" asp-action="CreateProduct">
+                    Crear producto
                 </a>
             </li>
         }

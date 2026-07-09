@@ -52,7 +52,7 @@ namespace proyectoFeelings.Controllers
 
                }
            
-            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false); // crea la variable user y verifica que los variables matcheen con lo que ingresamos y entra o no al if
+            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, lockoutOnFailure: false); // crea la variable user y verifica que los variables matcheen con lo que ingresamos y entra o no al if
             if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home"); // que si se hizo el login correctamente redirige al controlador de home
@@ -86,7 +86,6 @@ namespace proyectoFeelings.Controllers
                 return NotFound();
 
             }
-            //   return View(user);
             var model = new UserViewModel
             {
                 Id = user.Id,
@@ -119,8 +118,7 @@ namespace proyectoFeelings.Controllers
         .ToList();
 
             return View(users);
-            //var users = _context.Users.ToList();
-            //  return View(users);
+
         }
         // post: account/edituser/<userId>
 

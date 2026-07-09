@@ -1,0 +1,72 @@
+﻿@model proyectoFeelings.ViewModels.ProductViewModel
+
+@{
+    ViewData["Title"] = "Crear producto";
+}
+
+<h2>Crear producto</h2>
+
+<form asp-action="Create" method="post">
+
+    <input asp-for="StoreID" type="hidden" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label>Tienda</label>
+        <input asp-for="StoreID" class="form-control" readonly />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Code" class="form-label">Codigo del producto</label>
+        <input asp-for="Code" class="form-control" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Descripcion</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Precio</label>
+        <input asp-for="Price" type="number" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Quantity" class="form-label">Cantidad</label>
+        <input asp-for="Quantity" type="number" class="form-control" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Provider" class="form-label">Proveedor</label>
+        <input asp-for="Provider" class="form-control" />
+        <span asp-validation-for="Provider" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label">Categoria</label>
+        <input asp-for="Category" class="form-control" />
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Status" class="form-check-input" />
+        <label asp-for="Status" class="form-check-label">Activo</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Crear
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancelar
+    </a>
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
