@@ -6,14 +6,17 @@
 
 <h2>Crear producto</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="CreateProduct" method="post">
 
     <input asp-for="StoreID" type="hidden" />
     <div asp-validation-summary="All" class="text-danger"></div>
-
     <div class="mb-3">
         <label>Tienda</label>
-        <input asp-for="StoreID" class="form-control" readonly />
+        <input class="form-control" readonly
+               value="@(Model.StoreID == 11 ? "Multicentro" :
+                        Model.StoreID == 2025 ? "Terramall" :
+                        Model.StoreID == 2026 ? "San Sebastian" :
+                        "Unknown Store")" />
     </div>
     <div class="mb-3">
         <label asp-for="Code" class="form-label">Codigo del producto</label>

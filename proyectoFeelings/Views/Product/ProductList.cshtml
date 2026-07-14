@@ -1,0 +1,90 @@
+﻿@model List<proyectoFeelings.ViewModels.ProductViewModel>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tienda</th>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th>Categoria</th>
+            <th>Cantidad</th>
+            <th>Proveedor</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>
+                    @(product.StoreID == 11 ? "Multicentro" :
+                      product.StoreID == 2025 ? "Terramall" :
+                      product.StoreID == 2026 ? "San Sebastian" :
+                      "Unknown")
+                </td>
+                <td>@(product.Code)</td>
+                <td>@(product.Description)</td>
+                <td>@(product.Category)</td>
+                <td>@(product.Quantity)</td>
+                <td>@(product.Provider)</td>
+                <td>@(product.Status ? "Activo" : "Inactivo")</td>
+                <td>
+                    <a asp-controller="Product"
+                       asp-action="EditProduct"
+                       asp-route-id="@product.ProductID"
+                       class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+
+                </td>
+
+                <td>
+                    <form asp-action="DeleteProduct" method="post" style="display:inline;"
+                          onsubmit="return confirm('¿Está seguro de que desea eliminar este producto?');">
+
+                        <input type="hidden" name="id" value="@product.ProductID" />
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <a asp-controller="Product"
+                       asp-action="MoveProduct"
+                       asp-route-ProductID="@product.ProductID"
+                       asp-route-StoreID="@product.StoreID"
+                       class="btn btn-warning btn-sm">
+                       Trasladar producto
+                    </a>
+
+                </td>
+
+
+            </tr>
+        }
+    </tbody>
+</table>

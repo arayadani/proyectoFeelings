@@ -17,5 +17,7 @@ namespace proyectoFeelings.Models
 
         public Store Store { get; set; }
         public Product Product { get; set; }
+
+
     }
 }
