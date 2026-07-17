@@ -53,7 +53,8 @@
                 <td>
                     <a asp-controller="Product"
                        asp-action="EditProduct"
-                       asp-route-id="@product.ProductID"
+                       asp-route-productId="@(product.ProductID)"
+                       asp-route-storeId="@(product.StoreID)"
                        class="btn btn-warning btn-sm">
                         Editar
                     </a>
