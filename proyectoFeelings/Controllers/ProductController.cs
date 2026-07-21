@@ -74,10 +74,14 @@ namespace proyectoFeelings.Controllers
 
         //ProductList
         [HttpGet]
-        public IActionResult ProductList()
+        public async Task<IActionResult> ProductList()
 
         {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+
             var Products = _context.Product
+            .Where(p => p.StoreProduct.Any(sp => sp.StoreID == storeId))
         .Select(u => new ProductViewModel
         {
             ProductID = u.ProductID,
@@ -99,25 +103,23 @@ namespace proyectoFeelings.Controllers
         //edit product
 
         [HttpGet]
-        public async Task<IActionResult> EditProduct(String productId, String storeId)
+        public async Task<IActionResult> EditProduct(int productId, int storeId)
 
         {
-            var ProductId = Convert.ToInt32(productId);
-            var StoreId = Convert.ToInt32(storeId);
 
-
-            if (ProductId == null || StoreId == null)
+           if (productId == null || storeId == null)
             {
-                return NotFound();
+              return NotFound();
             }
-            var product = await _context.Product.FindAsync(ProductId);
-            var storeProduct = await _context.StoreProduct.FindAsync(ProductId, StoreId);
+            var product = await _context.Product.FindAsync(productId);
+            var storeProduct = await _context.StoreProduct.FindAsync(productId, storeId);
 
-            if (storeProduct == null)
+         if (storeProduct == null)
             {
                 return NotFound();
 
-            }
+           }
+           
             var model = new ProductViewModel
             {
                 ProductID = product.ProductID,
@@ -132,7 +134,38 @@ namespace proyectoFeelings.Controllers
             };
 
             return View(model);
+
         }
+        [HttpPost]
+
+        public async Task<IActionResult> EditProduct(ProductViewModel model)
+
+        {
+           var currentUser = await userManager.GetUserAsync(User);
+           var storeId = (currentUser)?.StoreID;
+
+            var product = await _context.Product.FindAsync(model.ProductID);
+            var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, storeId);
+          if (product == null || storeProduct == null)
+            {
+                return NotFound();
+            }
+
+            // Update the product properties
+            product.Code = Convert.ToInt32(model.Code);
+            product.Description = model.Description;
+            product.Price = Convert.ToInt32(model.Price);
+            product.Provider = model.Provider;
+            product.Status = model.Status;
+            product.Category = model.Category;
+
+            // Update the storeProduct properties
+            storeProduct.Quantity = Convert.ToInt32(model.Quantity);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Producto actualizado correctamente";
+            return RedirectToAction(nameof(ProductList));
+        }
+
 
     }
 }

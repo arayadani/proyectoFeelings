@@ -29,6 +29,7 @@
             <th>Descripcion</th>
             <th>Categoria</th>
             <th>Cantidad</th>
+            <th>Precio</th>
             <th>Proveedor</th>
             <th>Estado</th>
         </tr>
@@ -48,6 +49,7 @@
                 <td>@(product.Description)</td>
                 <td>@(product.Category)</td>
                 <td>@(product.Quantity)</td>
+                <td>@(product.Price)</td>
                 <td>@(product.Provider)</td>
                 <td>@(product.Status ? "Activo" : "Inactivo")</td>
                 <td>
@@ -59,19 +61,6 @@
                         Editar
                     </a>
 
-                </td>
-
-                <td>
-                    <form asp-action="DeleteProduct" method="post" style="display:inline;"
-                          onsubmit="return confirm('¿Está seguro de que desea eliminar este producto?');">
-
-                        <input type="hidden" name="id" value="@product.ProductID" />
-                        @Html.AntiForgeryToken()
-
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            Eliminar
-                        </button>
-                    </form>
                 </td>
                 <td>
                     <a asp-controller="Product"
