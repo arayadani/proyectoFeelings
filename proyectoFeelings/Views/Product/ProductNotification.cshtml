@@ -1,4 +1,4 @@
-﻿@model List<proyectoFeelings.ViewModels.ProductViewModel>
+﻿@model List<proyectoFeelings.ViewModels.RecordViewModel>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -24,21 +24,22 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Tipo</th>
             <th>Tienda</th>
             <th>Codigo</th>
             <th>Descripcion</th>
-            <th>Categoria</th>
             <th>Cantidad</th>
-            <th>Precio</th>
             <th>Proveedor</th>
-            <th>Estado</th>
         </tr>
     </thead>
     <tbody>
 
-        @foreach (var product in Model)
+    
+ <!--  @foreach (var product in Model)
         {
             <tr>
+                <td>@(product.Code)</td>
+
                 <td>
                     @(product.StoreID == 11 ? "Multicentro" :
                       product.StoreID == 2025 ? "Terramall" :
@@ -54,17 +55,27 @@
                 <td>@(product.Status ? "Activo" : "Inactivo")</td>
                 <td>
                     <a asp-controller="Product"
-                       asp-action="EditProduct"
-                       asp-route-productId="@(product.ProductID)"
-                       asp-route-storeId="@(product.StoreID)"
-                       class="btn btn-warning btn-sm">
-                        Editar
+                       asp-action="MoveProduct"
+                       asp-route-ProductID="@product.ProductID"
+                       asp-route-StoreID="@product.StoreID"
+                       class="btn btn-success btn-sm">
+                        Aprobar
+                    </a>
+
+                </td>
+                <td>
+                    <a asp-controller="Product"
+                       asp-action="MoveProduct"
+                       asp-route-ProductID="@product.ProductID"
+                       asp-route-StoreID="@product.StoreID"
+                       class="btn btn-error btn-sm">
+                        Declinar
                     </a>
 
                 </td>
 
-
             </tr>
+  -->
         }
     </tbody>
 </table>

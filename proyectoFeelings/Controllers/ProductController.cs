@@ -165,7 +165,41 @@ namespace proyectoFeelings.Controllers
             TempData["SuccessMessage"] = "Producto actualizado correctamente";
             return RedirectToAction(nameof(ProductList));
         }
+        //General ProductList
+        [HttpGet]
+        public async Task<IActionResult> StoresInventory()
 
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+
+            var Products = _context.Product
+            .Where(p => p.StoreProduct.Any(sp => sp.StoreID != storeId))
+        .Select(u => new ProductViewModel
+        {
+            ProductID = u.ProductID,
+            Code = u.Code,
+            Description = u.Description,
+            Price = u.Price,
+            Provider = u.Provider,
+            Status = u.Status,
+            StoreID = u.StoreProduct.FirstOrDefault().StoreID, // Assuming you want the StoreID from the first StoreProduct
+            Category = u.Category,
+            Quantity = u.StoreProduct.FirstOrDefault().Quantity,
+
+        })
+        .ToList();
+
+            return View(Products);
+
+        }
+        //Notificacion de productos
+        [HttpGet]
+        public async Task<IActionResult> ProductNotification()
+        {
+
+            return View();
+        }
 
     }
 }

@@ -54,17 +54,17 @@
                 <td>@(product.Status ? "Activo" : "Inactivo")</td>
                 <td>
                     <a asp-controller="Product"
-                       asp-action="EditProduct"
-                       asp-route-productId="@(product.ProductID)"
-                       asp-route-storeId="@(product.StoreID)"
+                       asp-action="MoveProduct"
+                       asp-route-ProductID="@product.ProductID"
+                       asp-route-StoreID="@product.StoreID"
                        class="btn btn-warning btn-sm">
-                        Editar
+                        Trasladar producto
                     </a>
 
                 </td>
 
-
             </tr>
+         
         }
     </tbody>
 </table>
