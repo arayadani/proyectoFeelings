@@ -41,9 +41,9 @@
                 <td>@(user.AdminAccess ? "Administrador" : "Colaborador")</td>
                 <td>@(user.Status ? "Activo" : "Inactivo")</td>
                 <td>
-                    @(user.StoreId == 11 ? "Multicentro" :
-                      user.StoreId == 2025 ? "Terramall" :
-                      user.StoreId == 2026 ? "San Sebastian" :
+                    @(user.StoreId == 7 ? "Multicentro" :
+                      user.StoreId == 8 ? "Terramall" :
+                      user.StoreId == 9 ? "San Sebastian" :
                       "Unknown")
                 </td>
                 <td>@user.PhoneNumber</td>

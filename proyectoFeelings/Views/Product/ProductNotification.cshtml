@@ -34,48 +34,58 @@
     </thead>
     <tbody>
 
-    
- <!--  @foreach (var product in Model)
+  @foreach (var record in Model)
         {
             <tr>
-                <td>@(product.Code)</td>
+                <td>@(record.Type)</td>
 
                 <td>
-                    @(product.StoreID == 11 ? "Multicentro" :
-                      product.StoreID == 2025 ? "Terramall" :
-                      product.StoreID == 2026 ? "San Sebastian" :
+                    @(record.CurrentStoreID == 7 ? "Multicentro" :
+                      record.CurrentStoreID == 8 ? "Terramall" :
+                      record.CurrentStoreID == 9 ? "San Sebastian" :
                       "Unknown")
                 </td>
-                <td>@(product.Code)</td>
-                <td>@(product.Description)</td>
-                <td>@(product.Category)</td>
-                <td>@(product.Quantity)</td>
-                <td>@(product.Price)</td>
-                <td>@(product.Provider)</td>
-                <td>@(product.Status ? "Activo" : "Inactivo")</td>
-                <td>
-                    <a asp-controller="Product"
-                       asp-action="MoveProduct"
-                       asp-route-ProductID="@product.ProductID"
-                       asp-route-StoreID="@product.StoreID"
-                       class="btn btn-success btn-sm">
-                        Aprobar
-                    </a>
-
-                </td>
-                <td>
-                    <a asp-controller="Product"
-                       asp-action="MoveProduct"
-                       asp-route-ProductID="@product.ProductID"
-                       asp-route-StoreID="@product.StoreID"
-                       class="btn btn-error btn-sm">
-                        Declinar
-                    </a>
-
-                </td>
-
+                <td>@(record.Code)</td>
+                <td>@(record.Description)</td>
+                <td>@(record.Quantity)</td>
+                <td>@(record.Provider)</td>
+                @if (record.Type == 1)
+                {
+                    <td>
+                        <a asp-controller="Product"
+                           asp-action="MoveProduct"
+                           asp-route-ProductID="@record.ProductID"
+                           asp-route-StoreID="@record.CurrentStoreID"
+                           class="btn btn-success btn-sm">
+                            Aprobar
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-controller="Product"
+                           asp-action="MoveProduct"
+                           asp-route-ProductID="@record.ProductID"
+                           asp-route-StoreID="@record.CurrentStoreID"
+                           class="btn btn-error btn-sm">
+                            Declinar
+                        </a>
+                    </td>
+                }
+                @if (record.Type == 2)
+                {
+                    <td>
+                        <a asp-controller="Product"
+                           asp-action="MoveProduct"
+                           asp-route-ProductID="@record.ProductID"
+                           asp-route-StoreID="@record.CurrentStoreID"
+                           class="btn btn-success btn-sm">
+                            Entendido
+                        </a>
+                    </td>
+                    
+                }
+                )
+               
             </tr>
-  -->
         }
     </tbody>
 </table>

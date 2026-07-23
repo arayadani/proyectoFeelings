@@ -12,8 +12,8 @@ using proyectoFeelings.Data;
 namespace proyectoFeelings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260605050325_migration19")]
-    partial class migration19
+    [Migration("20260723044536_migration1")]
+    partial class migration1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,6 +170,9 @@ namespace proyectoFeelings.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -196,9 +199,15 @@ namespace proyectoFeelings.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecordId"));
 
+                    b.Property<bool?>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CurrentStoreID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
@@ -212,15 +221,14 @@ namespace proyectoFeelings.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("StoreID")
-                        .HasColumnType("int");
-
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("RecordId");
 
-                    b.HasIndex("StoreID", "ProductID");
+                    b.HasIndex("CurrentStoreID");
+
+                    b.HasIndex("ProductID");
 
                     b.ToTable("Record");
                 });
@@ -255,18 +263,18 @@ namespace proyectoFeelings.Migrations
 
             modelBuilder.Entity("proyectoFeelings.Models.StoreProduct", b =>
                 {
-                    b.Property<int>("StoreID")
+                    b.Property<int>("ProductID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductID")
+                    b.Property<int>("StoreID")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.HasKey("StoreID", "ProductID");
+                    b.HasKey("ProductID", "StoreID");
 
-                    b.HasIndex("ProductID");
+                    b.HasIndex("StoreID");
 
                     b.ToTable("StoreProduct");
                 });
@@ -404,13 +412,21 @@ namespace proyectoFeelings.Migrations
 
             modelBuilder.Entity("proyectoFeelings.Models.Record", b =>
                 {
-                    b.HasOne("proyectoFeelings.Models.StoreProduct", "StoreProduct")
+                    b.HasOne("proyectoFeelings.Models.Store", "Store")
                         .WithMany()
-                        .HasForeignKey("StoreID", "ProductID")
+                        .HasForeignKey("CurrentStoreID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("StoreProduct");
+                    b.HasOne("proyectoFeelings.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("proyectoFeelings.Models.StoreProduct", b =>

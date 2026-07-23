@@ -198,7 +198,30 @@ namespace proyectoFeelings.Controllers
         public async Task<IActionResult> ProductNotification()
         {
 
-            return View();
+            var Notification = _context.Record
+                   .Select(u => new RecordViewModel
+                   {
+                     
+
+                         ProductID = 1,
+                         CurrentStoreID = 8,
+                         Quantity = 5,
+                         Active = true,
+                         DateTime = DateTime.Now,
+                         Description = "Producto 1",
+                         Code = 1,
+                         Comment = "Comentario 1",
+                         Type = 1,
+                         Provider = "Proveedor 1",
+
+
+
+                     
+                   })
+                  
+                   .ToList();
+
+                    return View(Notification);
         }
 
     }

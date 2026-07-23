@@ -4,17 +4,22 @@ namespace proyectoFeelings.ViewModels
 {
     public class RecordViewModel
     {
-        string Type { get; set; }
+       public int Type { get; set; }
 
-        int StoreId { get; set; }
+        public int Code { get; set; }
 
-        int Code { get; set; }
+        public string Description { get; set; }
 
-        string Description { get; set; }
+        public string Provider { get; set; }
 
-        string Provider { get; set; }
+        public int Quantity { get; set; }
+        public bool? Active { get; set; }
+        public int CurrentStoreID { get; set; }
 
-        int Quantity { get; set; }
-        
+        public int? NewStoreID { get; set; }
+        public string Comment { get; set; }
+        public DateTime DateTime { get; set; }
+        public int ProductID { get; set; }
+
     }
 }
