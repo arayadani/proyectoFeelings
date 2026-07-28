@@ -145,51 +145,66 @@ namespace proyectoFeelings.Services
                 logger.LogInformation(Store.StoreID.ToString());
 
                 //anadir notificaciones
+                bool hasType1 = await context.Record.AnyAsync(r => r.Type == 1 && r.Active == true);
+                bool hasType2 = await context.Record.AnyAsync(r => r.Type == 2 && r.Active == true);
 
-
-
-                     var Notification1 = new Record
-                     {
-
-                         ProductID = 1,
-                         CurrentStoreID = 8,
-                         Quantity = 5,
-                         Active = true,
-                         DateTime = DateTime.Now,
-                      //   Description = "Producto 1",
-                      //   Code = 1,
-                         Comment = "Comentario 1",
-                         Type = 1,
-                       //  Provider = "Proveedor 1",
-
-
-
-                     };
-
-                context.Record.Add(Notification1);
-
-                var Notification2 = new Record
+                if (!hasType1)
                 {
 
-                    ProductID = 1,
-                    CurrentStoreID = 8,
-                    Quantity = 5,
-                    Active = true,
-                    DateTime = DateTime.Now,
-                    //   Description = "Producto 1",
-                    //   Code = 1,
-                    Comment = "Comentario 1",
-                    Type = 2,
-                    //  Provider = "Proveedor 1",
+
+
+                    var Notification1 = new Record
+                    {
+
+                        ProductID = 1,
+                        CurrentStoreID = 8,
+                        Quantity = 5,
+                        Active = true,
+                        DateTime = DateTime.Now,
+                        //   Description = "Producto 1",
+                        //   Code = 1,
+                        Comment = "Comentario 1",
+                        Type = 1,
+                        //  Provider = "Proveedor 1",
 
 
 
-                };
+                    };
 
-                context.Record.Add(Notification2);
+                    context.Record.Add(Notification1);
+                    await context.SaveChangesAsync();
 
-                await context.SaveChangesAsync();
+                }
+                if (!hasType2)
+                    {
+                        
 
+
+
+                    
+                    var Notification2 = new Record
+                    {
+
+                        ProductID = 2,
+                        CurrentStoreID = 8,
+                        Quantity = 5,
+                        Active = true,
+                        DateTime = DateTime.Now,
+                        //   Description = "Producto 1",
+                        //   Code = 1,
+                        Comment = "Comentario 1",
+                        Type = 2,
+                        //  Provider = "Proveedor 1",
+
+
+
+                    };
+
+                    context.Record.Add(Notification2);
+
+                    await context.SaveChangesAsync();
+
+                }
 
 
             }

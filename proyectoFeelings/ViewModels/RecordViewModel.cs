@@ -5,7 +5,7 @@ namespace proyectoFeelings.ViewModels
     public class RecordViewModel
     {
        public int Type { get; set; }
-
+        public int RecordId { get; set; }
         public int Code { get; set; }
 
         public string Description { get; set; }

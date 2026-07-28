@@ -198,31 +198,48 @@ namespace proyectoFeelings.Controllers
         public async Task<IActionResult> ProductNotification()
         {
 
-            var Notification = _context.Record
-                   .Select(u => new RecordViewModel
-                   {
-                     
+            var Notifications = _context.Record
+            .Where(u => (bool)u.Active)
+       .Select(u => new RecordViewModel
+       {
+           ProductID = u.ProductID,
+           Code = u.Product.Code,
+           Description = u.Product.Description,
+           Provider = u.Product.Provider,
+           CurrentStoreID = u.CurrentStoreID, // Assuming you want the StoreID from the first StoreProduct
+           Quantity = u.Quantity,
+           DateTime = u.DateTime,
+           Type = u.Type,
+           Comment = u.Comment,
 
-                         ProductID = 1,
-                         CurrentStoreID = 8,
-                         Quantity = 5,
-                         Active = true,
-                         DateTime = DateTime.Now,
-                         Description = "Producto 1",
-                         Code = 1,
-                         Comment = "Comentario 1",
-                         Type = 1,
-                         Provider = "Proveedor 1",
+       })
+       .ToList();
 
-
-
-                     
-                   })
-                  
-                   .ToList();
-
-                    return View(Notification);
+            return View(Notifications);
         }
+        // ack la notificacion
+        public async Task<IActionResult> AckNotification(int ProductID, int StoreID, int Type)
+        {
+            var record = await _context.Record
+                .FirstOrDefaultAsync(r =>
+                    r.CurrentStoreID == StoreID &&
+                    r.Type == Type &&
+                    r.Active == true &&
+                    r.ProductID == ProductID);
+            
+            if (record == null)
+            {
+                return NotFound();
+            }
+              
+            record.Active = false;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Notificacion recibida correctamente";
+            return RedirectToAction(nameof(ProductNotification));
+
+        }
+        
+        
 
     }
 }

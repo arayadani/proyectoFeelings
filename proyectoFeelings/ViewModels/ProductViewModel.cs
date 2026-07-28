@@ -18,6 +18,8 @@ namespace proyectoFeelings.ViewModels
 
         public int? ProductID { get; set; }
 
+
+
         public ICollection<StoreProduct> StoreProduct { get; set; }
 
         public User User { get; set; }

@@ -30,6 +30,9 @@
             <th>Descripcion</th>
             <th>Cantidad</th>
             <th>Proveedor</th>
+            <th>Fecha de la notificacion</th>
+
+
         </tr>
     </thead>
     <tbody>
@@ -37,18 +40,27 @@
   @foreach (var record in Model)
         {
             <tr>
-                <td>@(record.Type)</td>
+                <td>
+                    @(record.Type == 1 ? "Traslado" :
+                          record.Type == 2 ? "Reabastecimiento" :
+                          "Otro")
+
+                </td>
 
                 <td>
                     @(record.CurrentStoreID == 7 ? "Multicentro" :
                       record.CurrentStoreID == 8 ? "Terramall" :
                       record.CurrentStoreID == 9 ? "San Sebastian" :
-                      "Unknown")
+                      "Otro")
                 </td>
                 <td>@(record.Code)</td>
                 <td>@(record.Description)</td>
                 <td>@(record.Quantity)</td>
                 <td>@(record.Provider)</td>
+                <td>@(record.DateTime.ToString("dd/MM/yyyy")
+    )
+                </td>
+
                 @if (record.Type == 1)
                 {
                     <td>
@@ -65,7 +77,8 @@
                            asp-action="MoveProduct"
                            asp-route-ProductID="@record.ProductID"
                            asp-route-StoreID="@record.CurrentStoreID"
-                           class="btn btn-error btn-sm">
+                           asp-route-Type="@record.Type"
+                           class="btn btn-danger btn-sm">
                             Declinar
                         </a>
                     </td>
@@ -74,16 +87,17 @@
                 {
                     <td>
                         <a asp-controller="Product"
-                           asp-action="MoveProduct"
+                           asp-action="AckNotification"
                            asp-route-ProductID="@record.ProductID"
                            asp-route-StoreID="@record.CurrentStoreID"
+                           asp-route-Type="@record.Type"
                            class="btn btn-success btn-sm">
                             Entendido
                         </a>
                     </td>
                     
                 }
-                )
+                
                
             </tr>
         }
