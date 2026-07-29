@@ -31,6 +31,8 @@
             <th>Cantidad</th>
             <th>Proveedor</th>
             <th>Fecha de la notificacion</th>
+            <th>Comentario</th>
+
 
 
         </tr>
@@ -42,9 +44,8 @@
             <tr>
                 <td>
                     @(record.Type == 1 ? "Traslado" :
-                          record.Type == 2 ? "Reabastecimiento" :
+                          record.Type == 2 ? "ROP" :
                           "Otro")
-
                 </td>
 
                 <td>
@@ -53,13 +54,14 @@
                       record.CurrentStoreID == 9 ? "San Sebastian" :
                       "Otro")
                 </td>
+
                 <td>@(record.Code)</td>
                 <td>@(record.Description)</td>
                 <td>@(record.Quantity)</td>
                 <td>@(record.Provider)</td>
-                <td>@(record.DateTime.ToString("dd/MM/yyyy")
-    )
-                </td>
+                <td>@(record.DateTime.ToString("dd/MM/yyyy"))</td>
+                <td>@(record.Comment)</td>
+
 
                 @if (record.Type == 1)
                 {
