@@ -28,26 +28,28 @@
                     Administrador
                 </a>
             </li>
-            <li>
-            <ul>
-                <li>
-                    <a asp-controller="Account" asp-action="CreateUser">
-                        Crear usuario
-                    </a>
-                </li>
+          
+            
                     <li>
-                        <a asp-controller="Account" asp-action="UserList">
-                            Lista de usuarios
+                        <a asp-controller="Account" asp-action="CreateUser">
+                            Crear usuario
                         </a>
                     </li>
-                   
+             
+               <li>     
+                   <a asp-controller="Account" asp-action="UserList">
+                Lista de usuarios
+                </a>   
+                
+               </li>
+             
+                           
 
-            </ul>
                 <li>
                     <a asp-controller="Product" asp-action="ProductNotification">
                         Notificaciones
                     </a>
-                </li>
+          
         </li>
         
      
@@ -82,11 +84,18 @@
                 </a>
             </li>
         }
-        <div>
-            <partial name="_LoginPartial" />
-        </div>
+        @if (signInManager.IsSignedIn(User))
+        {
 
+            <li class="logout-item">
+                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-light p-0 text-decoration-none">
+                        Cerrar sesión
+                    </button>
+                </form>
+            </li>
+        }
     </ul>
-
 
 </div>

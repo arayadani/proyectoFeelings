@@ -1,5 +1,9 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<User> UserManager
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,18 +31,26 @@
 
                 Aqui va cerrar sesion
                 -->
+                @{
+                    var currentUser = await UserManager.GetUserAsync(User);
+                    var currentStoreId = currentUser?.StoreID;
+                    var currentStore = await UserManager.Users
+                        .Where(u => u.StoreID == currentStoreId)
+                        .Select(u => u.Store)
+                        .FirstOrDefaultAsync();
+                }
+
+                @if (currentUser != null)
+                {
+                    <span>Hola @currentUser.FullName - @currentUser.Store.StoreName</span>
+                }
+                
 
             </nav>
 
             <div class="container mt-3">
                 @RenderBody()
             </div>
-
-            <footer class="border-top footer text-muted mt-5">
-                <div class="container">
-                    2026 - ProyectoFeelings
-                </div>
-            </footer>
 
         </div>
 

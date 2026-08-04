@@ -70,7 +70,7 @@ namespace proyectoFeelings.Controllers
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
         [HttpGet]
         // get: account/edituser/<userId>
@@ -260,34 +260,8 @@ namespace proyectoFeelings.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteUser(String id)
-        {
-            var user = await userManager.FindByIdAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var result = await userManager.DeleteAsync(user);
-
-            if (result.Succeeded)
-            {
-                TempData["SuccessMessage"] = "Se elimino el usuario correctamente";
-                return RedirectToAction(nameof(UserList));
-            }
-
-            foreach (var error in result.Errors)
-            {
-               
-                ModelState.AddModelError("", error.Description);
-            }
-
-            return View(user);
-        }
-
+       
+        
         [HttpPost]
         public async Task<IActionResult> ChangePassword(UserViewModel model)
         {

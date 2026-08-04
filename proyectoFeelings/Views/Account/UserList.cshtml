@@ -56,19 +56,6 @@
                     </a>
 
                 </td>
-
-                <td>
-                    <form asp-action="DeleteUser" method="post" style="display:inline;"
-                          onsubmit="return confirm('¿Está seguro de que desea eliminar este usuario?');">
-
-                        <input type="hidden" name="id" value="@user.Id" />
-                        @Html.AntiForgeryToken()
-
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            Eliminar
-                        </button>
-                    </form>
-                </td>
                 <td>
                     <a asp-controller="Account"
                        asp-action="ChangePassword"

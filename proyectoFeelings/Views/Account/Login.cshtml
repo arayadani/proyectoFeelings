@@ -2,7 +2,7 @@
 @model LoginViewModel;
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Inicio de sesion";
     Layout = "~/Views/Shared/_AccountLayout.cshtml";
 }
 <div class="account-container">     
@@ -27,12 +27,11 @@
                        class="btn btn-primary"
                        style="width: 180px;" />
             </div>                <p class="text-center mt-2">
-                     ¿No cuenta con un usuario o olvido su contraseña? Comuniquese con el administrador
+                     ¿No cuenta con un usuario o olvido su contraseña? 
+                            Comuniquese con el administrador
                </p>
 
-                    <div class="text-center">
-                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Regresar a la pagina de inicio</a>
-                </div>
+               
         </form>
     </div>
 </div>

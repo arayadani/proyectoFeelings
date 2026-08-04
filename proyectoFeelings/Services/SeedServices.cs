@@ -75,7 +75,20 @@ namespace proyectoFeelings.Services
                     await context.SaveChangesAsync();
 
                 }
-                
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreName == "Administracion") == null)
+                {
+                    var Store4 = new Store
+                    {
+                        StoreName = "Administracion",
+                        PhoneNumber = "2211-1050",
+                        Location = "San Jose",
+                        Status = true
+                    };
+                    context.Store.Add(Store4);
+                    await context.SaveChangesAsync();
+
+                }
+
 
 
                 //anadir usuario admin
