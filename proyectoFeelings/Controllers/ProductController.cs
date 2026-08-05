@@ -93,6 +93,7 @@ namespace proyectoFeelings.Controllers
             StoreID = u.StoreProduct.FirstOrDefault().StoreID, // Assuming you want the StoreID from the first StoreProduct
             Category = u.Category,
             Quantity = u.StoreProduct.FirstOrDefault().Quantity,
+            StoreName = u.StoreProduct.FirstOrDefault().Store.StoreName // Assuming you want the StoreName from the first StoreProduct
 
         })
         .ToList();
@@ -186,6 +187,7 @@ namespace proyectoFeelings.Controllers
             StoreID = u.StoreProduct.FirstOrDefault().StoreID, // Assuming you want the StoreID from the first StoreProduct
             Category = u.Category,
             Quantity = u.StoreProduct.FirstOrDefault().Quantity,
+            StoreName = u.StoreProduct.FirstOrDefault().Store.StoreName // Assuming you want the StoreName from the first StoreProduct
 
         })
         .ToList();

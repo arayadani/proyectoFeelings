@@ -39,12 +39,7 @@
         @foreach (var product in Model)
         {
             <tr>
-                <td>
-                    @(product.StoreID == 7 ? "Multicentro" :
-                      product.StoreID == 8 ? "Terramall" :
-                      product.StoreID == 9 ? "San Sebastian" :
-                      "Unknown")
-                </td>
+                <td>@(product.StoreName)</td>
                 <td>@(product.Code)</td>
                 <td>@(product.Description)</td>
                 <td>@(product.Category)</td>

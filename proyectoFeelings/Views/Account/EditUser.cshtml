@@ -29,11 +29,10 @@
 
     <div class="mb-3">
         <label>Tienda</label>
-        <select asp-for="StoreId" class="form-control">
+        <select asp-for="StoreId" class="form-control" asp-items="Model.Stores">
+
             <option value="">Seleccione la tienda</option>
-            <option value="7">Multicentro</option>
-            <option value="8">Terramall</option>
-            <option value="9">San Sebastian</option>
+         
         </select>
     </div>
 

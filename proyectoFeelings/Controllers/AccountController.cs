@@ -72,34 +72,7 @@ namespace proyectoFeelings.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
-        [HttpGet]
-        // get: account/edituser/<userId>
-        public async Task<IActionResult> EditUser(String Id)
-        {
-            if (Id == null) 
-            {
-                return NotFound();
-            }
-            var user = await _context.Users.FindAsync(Id);
-            if (user == null)
-            {
-                return NotFound();
-
-            }
-            var model = new UserViewModel
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                AdminAccess = user.AdminAccess,
-                Status = user.Status,
-                StoreId = (int)user.StoreID,
-                // Add any other properties your ViewModel contains
-            };
-
-            return View(model);
-        }
+        
         [HttpGet]
         public IActionResult UserList()
         {
@@ -113,12 +86,55 @@ namespace proyectoFeelings.Controllers
             Status = u.Status,
             AdminAccess = u.AdminAccess,
             StoreId = (int)u.StoreID,
+            StoreName = u.Store.StoreName // Assuming you have a navigation property to Store in your User model
 
         })
         .ToList();
 
             return View(users);
 
+        }
+
+
+        [HttpGet]
+        // get: account/edituser/<userId>
+        public async Task<IActionResult> EditUser(String Id)
+        {
+            if (Id == null)
+            {
+                return NotFound();
+            }
+            var user = await _context.Users.FindAsync(Id);
+            if (user == null)
+            {
+                return NotFound();
+
+            }
+          
+
+            var model = new UserViewModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                AdminAccess = user.AdminAccess,
+                Status = user.Status,
+                StoreId = (int)user.StoreID,
+                // Add any other properties your ViewModel contains
+            };
+
+            model.Stores = _context.Store
+          
+                  .Select(s => new SelectListItem
+                  {
+                      Value = s.StoreID.ToString(),
+                      Text = s.StoreName
+                  })
+                  .ToList();
+
+
+            return View(model);
         }
         // post: account/edituser/<userId>
 

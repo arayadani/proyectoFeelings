@@ -1,4 +1,4 @@
-﻿@model List<proyectoFeelings.ViewModels.ProductViewModel>
+﻿@model List<proyectoFeelings.Models.Store>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -25,33 +25,25 @@
     <thead>
         <tr>
             <th>Tienda</th>
-            <th>Codigo</th>
-            <th>Descripcion</th>
-            <th>Categoria</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th>Proveedor</th>
+            <th>Ubicacion</th>
+            <th>Numero</th>
             <th>Estado</th>
         </tr>
     </thead>
     <tbody>
 
-        @foreach (var product in Model)
+        @foreach (var store in Model)
         {
             <tr>
-                <td>@(product.StoreName)</td>
-                <td>@(product.Code)</td>
-                <td>@(product.Description)</td>
-                <td>@(product.Category)</td>
-                <td>@(product.Quantity)</td>
-                <td>@(product.Price)</td>
-                <td>@(product.Provider)</td>
-                <td>@(product.Status ? "Activo" : "Inactivo")</td>
+                
+                <td>@(store.StoreName)</td>
+                <td>@(store.Location)</td>
+                <td>@(store.PhoneNumber)</td>
+                <td>@(store.Status ? "Activo" : "Inactivo")</td>
                 <td>
-                    <a asp-controller="Product"
-                       asp-action="EditProduct"
-                       asp-route-productId="@(product.ProductID)"
-                       asp-route-storeId="@(product.StoreID)"
+                    <a asp-controller="Store"
+                       asp-action="EditStore"
+                       asp-route-storeId="@(store.StoreID)"
                        class="btn btn-warning btn-sm">
                         Editar
                     </a>

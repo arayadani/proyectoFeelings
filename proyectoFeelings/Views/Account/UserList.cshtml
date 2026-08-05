@@ -40,12 +40,8 @@
                 <td>@user.Email</td>
                 <td>@(user.AdminAccess ? "Administrador" : "Colaborador")</td>
                 <td>@(user.Status ? "Activo" : "Inactivo")</td>
-                <td>
-                    @(user.StoreId == 7 ? "Multicentro" :
-                      user.StoreId == 8 ? "Terramall" :
-                      user.StoreId == 9 ? "San Sebastian" :
-                      "Unknown")
-                </td>
+                <td>@user.StoreName</td>
+
                 <td>@user.PhoneNumber</td>
                 <td>
                     <a asp-controller="Account"
