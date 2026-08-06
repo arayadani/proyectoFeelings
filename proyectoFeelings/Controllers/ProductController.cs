@@ -112,7 +112,7 @@ namespace proyectoFeelings.Controllers
             {
               return NotFound();
             }
-            var product = await _context.Product.FindAsync(productId);
+         var product = await _context.Product.FindAsync(productId);
             var storeProduct = await _context.StoreProduct.FindAsync(productId, storeId);
 
          if (storeProduct == null)

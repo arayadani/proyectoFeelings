@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
 using proyectoFeelings.ViewModels;
+using System.Net.NetworkInformation;
+using System.Security.Cryptography.X509Certificates;
 
 
 namespace proyectoFeelings.Controllers
@@ -28,53 +30,31 @@ namespace proyectoFeelings.Controllers
             return View();
         }
 
-      /*  [HttpGet]
-        public async Task<IActionResult> CreateProduct()
+        //create store
+        [HttpGet]
+        public async Task<IActionResult> CreateStore()
 
         {
-            var currentUser = await userManager.GetUserAsync(User);
-            var storeId = (currentUser)?.StoreID;
-            var model = new ProductViewModel
-            {
-                User = currentUser,
-                StoreID = storeId ?? 0 // Assuming StoreID is an int, provide a default value if null/
-
-                // Add any other properties your ViewModel contains
-            };
-            //  return View(currentUser);
-            return View(model);
+           
+            return View();
 
         }
         [HttpPost]
-        public async Task<IActionResult> CreateProduct(ProductViewModel Product)
+        public async Task<IActionResult> CreateStore(Store model) //model es el tipo y store la variable que recibe los datos del formulario
         {
-            var currentUser = await userManager.GetUserAsync(User);
-            var storeId = (currentUser)?.StoreID;
-            var product = new Product
+            var store = new Store
             {
-                Code = Convert.ToInt32(Product.Code),
-                Description = Product.Description,
-                Price = Convert.ToInt32(Product.Price),
-                Provider = Product.Provider,
-                Status = Product.Status,
-                Category = Product.Category,
-
+                StoreName = model.StoreName,
+                Location = model.Location,
+                PhoneNumber = model.PhoneNumber,
+                Status = model.Status
             };
-            _context.Product.Add(product);
-            await _context.SaveChangesAsync(); // Save the product to get the ProductID
-            var StoreProduct = new StoreProduct
-            {
-                ProductID = product.ProductID,
-                StoreID = storeId ?? 0, // Assuming StoreID is an int, provide a default value if null
-                Quantity = Product.Quantity,
-            };
-            _context.StoreProduct.Add(StoreProduct);
-            await _context.SaveChangesAsync(); // Save the StoreProduct entity to the database
-            TempData["SuccessMessage"] = "Producto creado correctamente";
-            return RedirectToAction(nameof(ProductList));
+            _context.Store.Add(store);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Tienda creada correctamente";
+            return RedirectToAction(nameof(StoreList));
         }
-     */
-
+        
 
         //ProductList
 
@@ -99,6 +79,58 @@ namespace proyectoFeelings.Controllers
 
             return View(Stores);
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditStore(int storeId)
+
+        {
+
+            if (storeId == null)
+            {
+                return NotFound();
+            }
+            var store = await _context.Store.FindAsync( storeId);
+
+            if (store == null)
+            {
+                return NotFound();
+
+            }
+
+            var model = new Store
+            {
+                StoreID = store.StoreID,
+                StoreName = store.StoreName,
+                Location = store.Location,
+                PhoneNumber = store.PhoneNumber,
+                Status = store.Status
+            };
+          
+
+            return View(model);
+
+        }
+      [HttpPost]
+         public async Task<IActionResult> EditStore(Store model)
+
+        {
+            var store = await _context.Store.FindAsync(model.StoreID);
+
+            if (store == null)
+            {
+                return NotFound();
+            }
+
+            store.StoreName = model.StoreName;
+            store.Location = model.Location;
+            store.PhoneNumber = model.PhoneNumber;
+            store.Status = model.Status;
+
+            // Update the storeProduct properties
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Tienda actualizada correctamente";
+            return RedirectToAction(nameof(StoreList));
         }
     }
 }
