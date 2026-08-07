@@ -15,6 +15,7 @@ namespace proyectoFeelings.ViewModels
         public int Code { get; set; }
 
         public int StoreID { get; set; }
+        public string? Comment { get; set; }
 
         public string StoreName { get; set; }
 

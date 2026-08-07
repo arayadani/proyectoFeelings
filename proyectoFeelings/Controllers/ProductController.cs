@@ -33,8 +33,8 @@ namespace proyectoFeelings.Controllers
             var storeId = (currentUser)?.StoreID;
             var model = new ProductViewModel
             {
-               User = currentUser,
-               StoreID = storeId ?? 0 // Assuming StoreID is an int, provide a default value if null/
+                User = currentUser,
+                StoreID = storeId ?? 0 // Assuming StoreID is an int, provide a default value if null/
 
                 // Add any other properties your ViewModel contains
             };
@@ -55,7 +55,7 @@ namespace proyectoFeelings.Controllers
                 Provider = Product.Provider,
                 Status = Product.Status,
                 Category = Product.Category,
-               
+
             };
             _context.Product.Add(product);
             await _context.SaveChangesAsync(); // Save the product to get the ProductID
@@ -108,19 +108,19 @@ namespace proyectoFeelings.Controllers
 
         {
 
-           if (productId == null || storeId == null)
+            if (productId == null || storeId == null)
             {
-              return NotFound();
+                return NotFound();
             }
-         var product = await _context.Product.FindAsync(productId);
+            var product = await _context.Product.FindAsync(productId);
             var storeProduct = await _context.StoreProduct.FindAsync(productId, storeId);
 
-         if (storeProduct == null)
+            if (storeProduct == null)
             {
                 return NotFound();
 
-           }
-           
+            }
+
             var model = new ProductViewModel
             {
                 ProductID = product.ProductID,
@@ -142,12 +142,12 @@ namespace proyectoFeelings.Controllers
         public async Task<IActionResult> EditProduct(ProductViewModel model)
 
         {
-           var currentUser = await userManager.GetUserAsync(User);
-           var storeId = (currentUser)?.StoreID;
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
 
             var product = await _context.Product.FindAsync(model.ProductID);
             var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, storeId);
-          if (product == null || storeProduct == null)
+            if (product == null || storeProduct == null)
             {
                 return NotFound();
             }
@@ -228,20 +228,42 @@ namespace proyectoFeelings.Controllers
                     r.Type == Type &&
                     r.Active == true &&
                     r.ProductID == ProductID);
-            
+
             if (record == null)
             {
                 return NotFound();
             }
-              
+
             record.Active = false;
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Notificacion recibida correctamente";
             return RedirectToAction(nameof(ProductNotification));
 
         }
-        
-        
+        //trasladar producto
+
+        [HttpGet]
+        public async Task<IActionResult> MoveProduct(int productID, int storeID)
+        {       
+
+            var currentUser = await userManager.GetUserAsync(User);
+            var userStoreID = (currentUser)?.StoreID;
+            var product = await _context.Product.FindAsync(productID);
+
+            var model = new RecordViewModel
+        {
+                CurrentStoreID = storeID,
+                ProductID = (int)product.ProductID,
+                NewStoreID = userStoreID,
+               
+                Code = product.Code,
+                Type = 1, //esto es una operacion de traslado
+                Description = product.Description,
+                DateTime = DateTime.Now,
+            };
+
+            return View(model);
 
     }
+}
 }
