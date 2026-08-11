@@ -9,6 +9,12 @@
 <form asp-action="MoveProduct" method="post">
 
     <input asp-for="ProductID" type="hidden" />
+    <input asp-for="NewStoreID" type="hidden" />
+    <input asp-for="CurrentStoreID" type="hidden" />
+    <input asp-for="Code" type="hidden" />
+    <input asp-for="Description" type="hidden" />
+
+
 
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="mb-3">

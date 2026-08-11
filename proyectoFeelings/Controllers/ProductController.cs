@@ -213,6 +213,7 @@ namespace proyectoFeelings.Controllers
            DateTime = u.DateTime,
            Type = u.Type,
            Comment = u.Comment,
+           NewStoreID = u.NewStoreID,
 
        })
        .ToList();
@@ -244,18 +245,18 @@ namespace proyectoFeelings.Controllers
 
         [HttpGet]
         public async Task<IActionResult> MoveProduct(int productID, int storeID)
-        {       
+        {
 
             var currentUser = await userManager.GetUserAsync(User);
             var userStoreID = (currentUser)?.StoreID;
             var product = await _context.Product.FindAsync(productID);
 
             var model = new RecordViewModel
-        {
+            {
                 CurrentStoreID = storeID,
                 ProductID = (int)product.ProductID,
                 NewStoreID = userStoreID,
-               
+
                 Code = product.Code,
                 Type = 1, //esto es una operacion de traslado
                 Description = product.Description,
@@ -264,6 +265,44 @@ namespace proyectoFeelings.Controllers
 
             return View(model);
 
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> MoveProduct(RecordViewModel model)
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var userStoreID = (currentUser)?.StoreID;
+            var record = new Record
+            {
+                ProductID = model.ProductID,
+                CurrentStoreID = model.CurrentStoreID,
+                NewStoreID = userStoreID ?? 0, // Assuming StoreID is an int, provide a default value if null
+                Type = 1, // This is a transfer operation
+                Quantity = model.Quantity,
+                DateTime = DateTime.Now,
+                Active = true,
+                Comment = model.Comment
+            };
+            _context.Record.Add(record);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Trasladado solicitado correctamente";
+            return RedirectToAction(nameof(StoresInventory));
+
+        }
+
+        public async Task<IActionResult> ApproveMove(int ProductID, int StoreID, int Type)
+        {
+
+
+            return RedirectToAction(nameof(ProductNotification));
+
+        }
+
+        public async Task<IActionResult> RejectMove(int ProductID, int StoreID, int Type)
+        {
+            return RedirectToAction(nameof(ProductNotification));
+
+        }
     }
-}
 }

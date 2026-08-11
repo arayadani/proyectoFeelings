@@ -25,7 +25,8 @@
     <thead>
         <tr>
             <th>Tipo</th>
-            <th>Tienda</th>
+            <th>Tienda actual</th>
+            <th>Tienda destino</th>
             <th>Codigo</th>
             <th>Descripcion</th>
             <th>Cantidad</th>
@@ -54,7 +55,9 @@
                       record.CurrentStoreID == 9 ? "San Sebastian" :
                       "Otro")
                 </td>
-
+                <td>
+                    @(record.NewStoreID == null ? "N/A" : record.NewStoreID)
+                </td>
                 <td>@(record.Code)</td>
                 <td>@(record.Description)</td>
                 <td>@(record.Quantity)</td>
@@ -67,7 +70,7 @@
                 {
                     <td>
                         <a asp-controller="Product"
-                           asp-action="MoveProduct"
+                           asp-action="ApproveMove"
                            asp-route-ProductID="@record.ProductID"
                            asp-route-StoreID="@record.CurrentStoreID"
                            class="btn btn-success btn-sm">
@@ -76,7 +79,7 @@
                     </td>
                     <td>
                         <a asp-controller="Product"
-                           asp-action="MoveProduct"
+                           asp-action="RejectMove"
                            asp-route-ProductID="@record.ProductID"
                            asp-route-StoreID="@record.CurrentStoreID"
                            asp-route-Type="@record.Type"

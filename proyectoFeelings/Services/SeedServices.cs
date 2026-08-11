@@ -178,8 +178,7 @@ namespace proyectoFeelings.Services
                         //   Code = 1,
                         Comment = "Comentario 1",
                         Type = 1,
-                        //  Provider = "Proveedor 1",
-
+                        NewStoreID = 7,
 
 
                     };
