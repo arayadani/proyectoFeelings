@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace proyectoFeelings.Models
 {
-    [Index(nameof(Code), IsUnique = true)]
+   // [Index(nameof(Code), IsUnique = true)]
     public class Product
     {
         [Key]

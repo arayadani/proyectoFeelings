@@ -214,6 +214,8 @@ namespace proyectoFeelings.Controllers
            Type = u.Type,
            Comment = u.Comment,
            NewStoreID = u.NewStoreID,
+           Price = u.Product.Price,
+           Category = u.Product.Category,
 
        })
        .ToList();
@@ -221,6 +223,7 @@ namespace proyectoFeelings.Controllers
             return View(Notifications);
         }
         // ack la notificacion
+        [HttpGet]
         public async Task<IActionResult> AckNotification(int ProductID, int StoreID, int Type)
         {
             var record = await _context.Record
@@ -291,16 +294,93 @@ namespace proyectoFeelings.Controllers
 
         }
 
-        public async Task<IActionResult> ApproveMove(int ProductID, int StoreID, int Type)
+        public async Task<IActionResult> ApproveMove(int ProductID, int CurrentStoreID, int NewStoreID, int Quantity, int Code, string Provider, string Description, int Price, string Category)
         {
+            Console.WriteLine($"ProductID: {ProductID}");
+            Console.WriteLine($"CurrentStoreID: {CurrentStoreID}");
+            Console.WriteLine($"NewStoreID: {NewStoreID}");
+            Console.WriteLine($"Quantity: {Quantity}");
+            Console.WriteLine($"Code: {Code}");
+            Console.WriteLine($"Provider: {Provider}");
+            Console.WriteLine($"Description: {Description}");
+            Console.WriteLine($"Price: {Price}");
+            Console.WriteLine($"Category: {Category}");
+            var NewstoreProduct = await _context.StoreProduct.FindAsync(ProductID, NewStoreID);
+            var CurrentStoreProduct = await _context.StoreProduct.FindAsync(ProductID, CurrentStoreID);
 
+            if (NewstoreProduct == null)
+            {
+                Console.WriteLine("StoreProduct not found for the given ProductID and StoreID.");
+                // el producto no existe en alguna de las tiendas
+                //  return NotFound();
+                var product = new Product
+                {
+                    Code = Code,
+                    Description = Description,
+                    Price = Price,
+                    Provider = Provider,
+                    Status = true,
+                    Category = Category,
+                    
 
+                };
+                _context.Product.Add(product);
+                await _context.SaveChangesAsync(); // Save the product to get the ProductID
+                var StoreProduct = new StoreProduct
+                {
+                    ProductID = ProductID,
+                    StoreID = NewStoreID, // Assuming StoreID is an int, provide a default value if null
+                    Quantity = Quantity,
+                };
+                _context.StoreProduct.Add(StoreProduct);
+                await _context.SaveChangesAsync(); // Save the product to get the ProductID
+
+            }
+            else
+            {
+                Console.WriteLine("StoreProduct found for the given ProductID and StoreID.");
+                //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
+                CurrentStoreProduct.Quantity -= Quantity;
+                NewstoreProduct.Quantity += Quantity;
+
+            }
+
+            // Update the storeProduct properties
+            var record = await _context.Record
+                                     .FirstOrDefaultAsync(r =>
+                                         r.CurrentStoreID == CurrentStoreID &&
+                                         r.Active == true &&
+                                         r.ProductID == ProductID);
+
+            if (record == null)
+            {
+                Console.WriteLine("Record not found for ProductID: " + ProductID + ", CurrentStoreID: " + CurrentStoreID);
+                return NotFound();
+            }
+
+            record.Active = false; await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Producto trasladado correctamente";
             return RedirectToAction(nameof(ProductNotification));
 
         }
 
         public async Task<IActionResult> RejectMove(int ProductID, int StoreID, int Type)
         {
+            var record = await _context.Record
+                          .FirstOrDefaultAsync(r =>
+                              r.CurrentStoreID == StoreID &&
+                              r.Type == Type &&
+                              r.Active == true &&
+                              r.ProductID == ProductID);
+
+            if (record == null)
+            {
+                return NotFound();
+            }
+
+            record.Active = false;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Traslado declinado correctamente";
             return RedirectToAction(nameof(ProductNotification));
 
         }

@@ -31,6 +31,8 @@
             <th>Descripcion</th>
             <th>Cantidad</th>
             <th>Proveedor</th>
+            <th>Precio</th>
+            <th>Categoria</th>
             <th>Fecha de la notificacion</th>
             <th>Comentario</th>
 
@@ -62,6 +64,8 @@
                 <td>@(record.Description)</td>
                 <td>@(record.Quantity)</td>
                 <td>@(record.Provider)</td>
+                <td>@(record.Price)</td>
+                <td>@(record.Category)</td>
                 <td>@(record.DateTime.ToString("dd/MM/yyyy"))</td>
                 <td>@(record.Comment)</td>
 
@@ -72,7 +76,14 @@
                         <a asp-controller="Product"
                            asp-action="ApproveMove"
                            asp-route-ProductID="@record.ProductID"
-                           asp-route-StoreID="@record.CurrentStoreID"
+                           asp-route-CurrentStoreID="@record.CurrentStoreID"
+                           asp-route-NewStoreID="@record.NewStoreID"
+                           asp-route-Quantity="@record.Quantity"
+                           asp-route-Code="@record.Code"
+                           asp-route-Description="@record.Description"
+                           asp-route-Provider="@record.Provider"
+                           asp-route-Price="@record.Price"
+                           asp-route-Category="@record.Category"
                            class="btn btn-success btn-sm">
                             Aprobar
                         </a>
