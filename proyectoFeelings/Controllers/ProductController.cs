@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyectoFeelings.Data;
@@ -197,12 +198,11 @@ namespace proyectoFeelings.Controllers
         }
         //Notificacion de productos
         [HttpGet]
-        public async Task<IActionResult> ProductNotification()
+        public async Task<IActionResult> ProductNotification() // este lista las notificaciones y las muestra en la vista 
         {
-
             var Notifications = _context.Record
             .Where(u => (bool)u.Active)
-       .Select(u => new RecordViewModel
+            .Select(u => new RecordViewModel
        {
            ProductID = u.ProductID,
            Code = u.Product.Code,
@@ -272,7 +272,7 @@ namespace proyectoFeelings.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> MoveProduct(RecordViewModel model)
+        public async Task<IActionResult> MoveProduct(RecordViewModel model)// CREA UN RECORD  
         {
             var currentUser = await userManager.GetUserAsync(User);
             var userStoreID = (currentUser)?.StoreID;
@@ -296,17 +296,17 @@ namespace proyectoFeelings.Controllers
 
         public async Task<IActionResult> ApproveMove(int ProductID, int CurrentStoreID, int NewStoreID, int Quantity, int Code, string Provider, string Description, int Price, string Category)
         {
-            Console.WriteLine($"ProductID: {ProductID}");
-            Console.WriteLine($"CurrentStoreID: {CurrentStoreID}");
-            Console.WriteLine($"NewStoreID: {NewStoreID}");
-            Console.WriteLine($"Quantity: {Quantity}");
-            Console.WriteLine($"Code: {Code}");
-            Console.WriteLine($"Provider: {Provider}");
-            Console.WriteLine($"Description: {Description}");
-            Console.WriteLine($"Price: {Price}");
-            Console.WriteLine($"Category: {Category}");
-            var NewstoreProduct = await _context.StoreProduct.FindAsync(ProductID, NewStoreID);
+            //var products = await _context.Product.Where(p => p.Code == Code && p.ProductID != ProductID).ToListAsync();
+            //  var product1 = products.FirstOrDefault(p => p.StoreProduct?.Any(sp => sp.StoreID == NewStoreID));
+            var product1 = await _context.Product
+      .Include(p => p.StoreProduct)
+      .FirstOrDefaultAsync(
+          p => p.Code == Code &&
+               p.StoreProduct.Any(sp => sp.StoreID == NewStoreID)
+      );
+            var NewstoreProduct = await _context.StoreProduct.FindAsync(product1.ProductID, NewStoreID);
             var CurrentStoreProduct = await _context.StoreProduct.FindAsync(ProductID, CurrentStoreID);
+
 
             if (NewstoreProduct == null)
             {
@@ -321,29 +321,25 @@ namespace proyectoFeelings.Controllers
                     Provider = Provider,
                     Status = true,
                     Category = Category,
-                    
-
                 };
                 _context.Product.Add(product);
                 await _context.SaveChangesAsync(); // Save the product to get the ProductID
                 var StoreProduct = new StoreProduct
                 {
-                    ProductID = ProductID,
+                    ProductID = product.ProductID,
                     StoreID = NewStoreID, // Assuming StoreID is an int, provide a default value if null
                     Quantity = Quantity,
                 };
                 _context.StoreProduct.Add(StoreProduct);
                 await _context.SaveChangesAsync(); // Save the product to get the ProductID
-
             }
             else
             {
                 Console.WriteLine("StoreProduct found for the given ProductID and StoreID.");
                 //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
-                CurrentStoreProduct.Quantity -= Quantity;
                 NewstoreProduct.Quantity += Quantity;
-
             }
+                CurrentStoreProduct.Quantity -= Quantity;
 
             // Update the storeProduct properties
             var record = await _context.Record
@@ -358,7 +354,33 @@ namespace proyectoFeelings.Controllers
                 return NotFound();
             }
 
-            record.Active = false; await _context.SaveChangesAsync();
+            record.Active = false; 
+            await _context.SaveChangesAsync();
+            var record1 = new Record
+            {
+                ProductID = ProductID,
+                CurrentStoreID = CurrentStoreID,
+                NewStoreID = NewStoreID,
+                Type = 1,
+                Quantity = Quantity,
+                DateTime = DateTime.Now,
+                Active = false,
+                Comment = $"Se rebajaron {Quantity} productos"
+            };
+            _context.Record.Add(record1);
+            var record2 = new Record
+            {
+                ProductID = ProductID,
+                CurrentStoreID = CurrentStoreID,
+                NewStoreID = NewStoreID,
+                Type = 1,
+                Quantity = Quantity,
+                DateTime = DateTime.Now,
+                Active = false,
+                Comment = $"Se adicionaron {Quantity} productos"
+            };
+            _context.Record.Add(record2);
+            await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Producto trasladado correctamente";
             return RedirectToAction(nameof(ProductNotification));
 

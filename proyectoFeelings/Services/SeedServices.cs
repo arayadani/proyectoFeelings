@@ -169,7 +169,7 @@ namespace proyectoFeelings.Services
                     var Notification1 = new Record
                     {
 
-                        ProductID = 1,
+                        ProductID = 12,
                         CurrentStoreID = 8,
                         Quantity = 5,
                         Active = true,
@@ -197,7 +197,7 @@ namespace proyectoFeelings.Services
                     var Notification2 = new Record
                     {
 
-                        ProductID = 2,
+                        ProductID = 12,
                         CurrentStoreID = 8,
                         Quantity = 5,
                         Active = true,
