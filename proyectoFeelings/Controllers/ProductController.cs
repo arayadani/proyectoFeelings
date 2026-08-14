@@ -296,23 +296,18 @@ namespace proyectoFeelings.Controllers
 
         public async Task<IActionResult> ApproveMove(int ProductID, int CurrentStoreID, int NewStoreID, int Quantity, int Code, string Provider, string Description, int Price, string Category)
         {
-            //var products = await _context.Product.Where(p => p.Code == Code && p.ProductID != ProductID).ToListAsync();
-            //  var product1 = products.FirstOrDefault(p => p.StoreProduct?.Any(sp => sp.StoreID == NewStoreID));
             var product1 = await _context.Product
-      .Include(p => p.StoreProduct)
-      .FirstOrDefaultAsync(
+           .Include(p => p.StoreProduct)
+           .FirstOrDefaultAsync(
           p => p.Code == Code &&
                p.StoreProduct.Any(sp => sp.StoreID == NewStoreID)
       );
-            var NewstoreProduct = await _context.StoreProduct.FindAsync(product1.ProductID, NewStoreID);
+
             var CurrentStoreProduct = await _context.StoreProduct.FindAsync(ProductID, CurrentStoreID);
 
 
-            if (NewstoreProduct == null)
+            if (product1 == null)
             {
-                Console.WriteLine("StoreProduct not found for the given ProductID and StoreID.");
-                // el producto no existe en alguna de las tiendas
-                //  return NotFound();
                 var product = new Product
                 {
                     Code = Code,
@@ -333,10 +328,10 @@ namespace proyectoFeelings.Controllers
                 _context.StoreProduct.Add(StoreProduct);
                 await _context.SaveChangesAsync(); // Save the product to get the ProductID
             }
+            //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
             else
             {
-                Console.WriteLine("StoreProduct found for the given ProductID and StoreID.");
-                //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
+                var NewstoreProduct = await _context.StoreProduct.FindAsync(product1.ProductID, NewStoreID);
                 NewstoreProduct.Quantity += Quantity;
             }
                 CurrentStoreProduct.Quantity -= Quantity;
@@ -345,12 +340,13 @@ namespace proyectoFeelings.Controllers
             var record = await _context.Record
                                      .FirstOrDefaultAsync(r =>
                                          r.CurrentStoreID == CurrentStoreID &&
+                                         r.NewStoreID == NewStoreID &&
                                          r.Active == true &&
+                                         r.Quantity == Quantity &&
                                          r.ProductID == ProductID);
 
             if (record == null)
             {
-                Console.WriteLine("Record not found for ProductID: " + ProductID + ", CurrentStoreID: " + CurrentStoreID);
                 return NotFound();
             }
 
