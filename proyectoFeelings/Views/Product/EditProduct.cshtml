@@ -29,13 +29,34 @@
     </div>
     <div class="mb-3">
         <label asp-for="Provider" class="form-label">Proveedor</label>
-        <input asp-for="Provider" class="form-control" />
+        <select asp-for="Provider" class="form-select">
+            <option value="">Seleccione un proveedor</option>
+            <option value="Maryfer">Maryfer</option>
+            <option value="Cajas Fragil">Cajas Fragil</option>
+            <option value="Otro">Otro</option>
+        </select>
         <span asp-validation-for="Provider" class="text-danger"></span>
     </div>
 
+
     <div class="mb-3">
         <label asp-for="Category" class="form-label">Categoria</label>
-        <input asp-for="Category" class="form-control" />
+        <select asp-for="Category" class="form-select">
+            <option value="">Seleccione una categoría</option>
+            <option value="Peluche">Peluche</option>
+            <option value="Globos">Globos</option>
+            <option value="Cajas de madera">Cajas de madera</option>
+            <option value="Empaque">Empaque</option>
+            <option value="Cojin">Cojín</option>
+            <option value="Tarjetas">Tarjetas</option>
+            <option value="Graduacion">Graduación</option>
+            <option value="Amor">Amor</option>
+            <option value="Madre">Madre</option>
+            <option value="Papa">Papá</option>
+            <option value="Familia">Familia</option>
+            <option value="Otro">Otro</option>
+
+        </select>
         <span asp-validation-for="Category" class="text-danger"></span>
     </div>
 

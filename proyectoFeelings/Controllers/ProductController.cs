@@ -200,27 +200,44 @@ namespace proyectoFeelings.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductNotification() // este lista las notificaciones y las muestra en la vista 
         {
-            var Notifications = _context.Record
-            .Where(u => (bool)u.Active)
-            .Select(u => new RecordViewModel
-       {
-           ProductID = u.ProductID,
-           Code = u.Product.Code,
-           Description = u.Product.Description,
-           Provider = u.Product.Provider,
-           CurrentStoreID = u.CurrentStoreID, // Assuming you want the StoreID from the first StoreProduct
-           Quantity = u.Quantity,
-           DateTime = u.DateTime,
-           Type = u.Type,
-           Comment = u.Comment,
-           NewStoreID = u.NewStoreID,
-           Price = u.Product.Price,
-           Category = u.Product.Category,
+            // Cargar records activos con su Product
+            var records = await _context.Record
+                .Where(u => u.Active == true)
+                .Include(u => u.Product)
+                .ToListAsync();
 
-       })
-       .ToList();
+            // Recolectar los storeIds que necesitamos (current y new)
+            var storeIds = records
+                .Select(r => r.CurrentStoreID)
+                .Concat(records.Where(r => r.NewStoreID.HasValue)
+                               .Select(r => r.NewStoreID!.Value))
+                .Distinct();
 
-            return View(Notifications);
+            // Cargar las tiendas necesarias en un diccionario para evitar múltiples consultas
+            var stores = await _context.Store
+                .Where(s => storeIds.Contains(s.StoreID))
+                .ToDictionaryAsync(s => s.StoreID);
+
+            // Proyectar a ViewModel en memoria (ya no hay ValueTask ni async en la proyección)
+            var notifications = records.Select(u => new RecordViewModel
+            {
+                ProductID = u.ProductID,
+                Code = u.Product?.Code ?? 0,
+                Description = u.Product?.Description,
+                Provider = u.Product?.Provider,
+                CurrentStoreID = u.CurrentStoreID,
+                Quantity = u.Quantity,
+                DateTime = u.DateTime,
+                Type = u.Type,
+                Comment = u.Comment,
+                NewStoreID = u.NewStoreID,
+                Price = u.Product?.Price ?? 0,
+                Category = u.Product?.Category,
+                NewStoreName = u.NewStoreID.HasValue && stores.TryGetValue(u.NewStoreID.Value, out var ns) ? ns.StoreName : null,
+                CurrentStoreName = stores.TryGetValue(u.CurrentStoreID, out var cs) ? cs.StoreName : null,
+            }).ToList();
+
+            return View(notifications);
         }
         // ack la notificacion
         [HttpGet]
@@ -259,6 +276,8 @@ namespace proyectoFeelings.Controllers
                 CurrentStoreID = storeID,
                 ProductID = (int)product.ProductID,
                 NewStoreID = userStoreID,
+                NewStoreName = (await _context.Store.FindAsync(userStoreID))?.StoreName,
+                CurrentStoreName = (await _context.Store.FindAsync(storeID))?.StoreName,
 
                 Code = product.Code,
                 Type = 1, //esto es una operacion de traslado
@@ -281,7 +300,7 @@ namespace proyectoFeelings.Controllers
                 ProductID = model.ProductID,
                 CurrentStoreID = model.CurrentStoreID,
                 NewStoreID = userStoreID ?? 0, // Assuming StoreID is an int, provide a default value if null
-                Type = 1, // This is a transfer operation
+                Type = 1,
                 Quantity = model.Quantity,
                 DateTime = DateTime.Now,
                 Active = true,

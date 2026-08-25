@@ -52,13 +52,10 @@
                 </td>
 
                 <td>
-                    @(record.CurrentStoreID == 7 ? "Multicentro" :
-                      record.CurrentStoreID == 8 ? "Terramall" :
-                      record.CurrentStoreID == 9 ? "San Sebastian" :
-                      "Otro")
+                    @(record.CurrentStoreName)
                 </td>
                 <td>
-                    @(record.NewStoreID == null ? "N/A" : record.NewStoreID)
+                    @(record.NewStoreName)
                 </td>
                 <td>@(record.Code)</td>
                 <td>@(record.Description)</td>

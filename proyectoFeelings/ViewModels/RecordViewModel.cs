@@ -17,7 +17,9 @@ namespace proyectoFeelings.ViewModels
         public int Quantity { get; set; }
         public bool? Active { get; set; }
         public int CurrentStoreID { get; set; }
+        public string CurrentStoreName { get; set; }
 
+        public string NewStoreName { get; set; }
         public int? NewStoreID { get; set; }
         public string Comment { get; set; }
         public DateTime DateTime { get; set; }
