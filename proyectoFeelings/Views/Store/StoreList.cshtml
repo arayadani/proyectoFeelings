@@ -1,4 +1,6 @@
 ﻿@model List<proyectoFeelings.Models.Store>
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/3.0.2/css/dataTables.dataTables.css" />
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -21,7 +23,7 @@
     </div>
 }
 
-<table class="table">
+<table class="table" id="storesTable">
     <thead>
         <tr>
             <th>Tienda</th>
@@ -55,3 +57,42 @@
         }
     </tbody>
 </table>
+<script src="https://cdn.datatables.net/3.0.2/js/dataTables.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    new DataTable('#storesTable', {
+
+    pageLength: 10,
+
+    lengthMenu: [5, 10, 25, 50, 100],
+
+    order: [[0, 'asc']],
+
+    language: {
+    search: "Buscar:",
+    info: "",
+    infoEmpty: "No hay tiendas",
+    zeroRecords: "No se encontraron resultados",
+    lengthMenu: "",
+
+    paginate: {
+    first: "Primero",
+    last: "Último",
+    next: "Siguiente",
+    previous: "Anterior"
+    }
+    },
+
+    columnDefs: [
+    {
+    orderable: false,
+    targets: 4
+    }
+    ]
+
+    });
+
+    });
+</script>
