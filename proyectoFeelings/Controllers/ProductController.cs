@@ -133,6 +133,7 @@ namespace proyectoFeelings.Controllers
                 StoreID = storeProduct.StoreID, // Assuming you want the StoreID from the first StoreProduct
                 Category = product.Category,
                 Quantity = storeProduct.Quantity,
+
             };
 
             return View(model);
@@ -147,7 +148,7 @@ namespace proyectoFeelings.Controllers
             var storeId = (currentUser)?.StoreID;
 
             var product = await _context.Product.FindAsync(model.ProductID);
-            var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, storeId);
+            var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, model.StoreID);
             if (product == null || storeProduct == null)
             {
                 return NotFound();
@@ -160,12 +161,35 @@ namespace proyectoFeelings.Controllers
             product.Provider = model.Provider;
             product.Status = model.Status;
             product.Category = model.Category;
+            
 
             // Update the storeProduct properties
             storeProduct.Quantity = Convert.ToInt32(model.Quantity);
             await _context.SaveChangesAsync();
+            var record = new Record
+            {
+                ProductID = (int)model.ProductID,
+                CurrentStoreID = model.StoreID,
+                //NewStoreID = userStoreID ?? 0, // Assuming StoreID is an int, provide a default value if null
+                Type = 3,
+                Quantity = model.Quantity,
+                DateTime = DateTime.Now,
+                Active = true,
+                Comment = model.Comment
+            };
+            _context.Record.Add(record);
+            await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Producto actualizado correctamente";
-            return RedirectToAction(nameof(ProductList));
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction(nameof(StoresInventory));
+
+            }
+            else
+            {
+                return View(model);
+
+            }
         }
         //General ProductList
         [HttpGet]

@@ -34,6 +34,9 @@
             <th>Precio</th>
             <th>Proveedor</th>
             <th>Estado</th>
+            <th></th>
+            <th></th>
+
         </tr>
     </thead>
     <tbody>
@@ -56,6 +59,17 @@
                        asp-route-StoreID="@product.StoreID"
                        class="btn btn-warning btn-sm">
                         Trasladar producto
+                    </a>
+
+                </td>
+
+                <td>
+                    <a asp-controller="Product"
+                       asp-action="EditProduct"
+                       asp-route-productId="@(product.ProductID)"
+                       asp-route-storeId="@(product.StoreID)"
+                       class="btn btn-warning btn-sm">
+                        Editar
                     </a>
 
                 </td>
