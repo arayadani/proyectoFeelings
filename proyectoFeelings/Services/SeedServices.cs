@@ -158,7 +158,7 @@ namespace proyectoFeelings.Services
                 logger.LogInformation(Store.StoreID.ToString());
 
                 //anadir notificaciones
-                bool hasType1 = await context.Record.AnyAsync(r => r.Type == 1 && r.Active == true);
+           /*     bool hasType1 = await context.Record.AnyAsync(r => r.Type == 1 && r.Active == true);
                 bool hasType2 = await context.Record.AnyAsync(r => r.Type == 2 && r.Active == true);
 
                 if (!hasType1)
@@ -217,7 +217,7 @@ namespace proyectoFeelings.Services
                     await context.SaveChangesAsync();
 
                 }
-
+           */
 
             }
             catch (Exception ex)

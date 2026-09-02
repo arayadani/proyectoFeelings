@@ -55,7 +55,8 @@
                     @(record.CurrentStoreName)
                 </td>
                 <td>
-                    @(record.NewStoreName)
+                    @(record.NewStoreName==null? "N/A":
+                    record.NewStoreName)
                 </td>
                 <td>@(record.Code)</td>
                 <td>@(record.Description)</td>

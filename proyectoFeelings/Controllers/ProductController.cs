@@ -174,7 +174,7 @@ namespace proyectoFeelings.Controllers
                 Type = 3,
                 Quantity = model.Quantity,
                 DateTime = DateTime.Now,
-                Active = true,
+                Active = false,
                 Comment = model.Comment
             };
             _context.Record.Add(record);
@@ -187,7 +187,7 @@ namespace proyectoFeelings.Controllers
             }
             else
             {
-                return View(model);
+                return RedirectToAction(nameof(ProductList));
 
             }
         }

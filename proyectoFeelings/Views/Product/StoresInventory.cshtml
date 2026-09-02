@@ -34,7 +34,10 @@
             <th>Precio</th>
             <th>Proveedor</th>
             <th>Estado</th>
+              @if (User.IsInRole("User"))
+              {
             <th></th>
+              }
             <th></th>
 
         </tr>
@@ -52,6 +55,9 @@
                 <td>@(product.Price)</td>
                 <td>@(product.Provider)</td>
                 <td>@(product.Status ? "Activo" : "Inactivo")</td>
+
+                @if (User.IsInRole("User"))
+                {
                 <td>
                     <a asp-controller="Product"
                        asp-action="MoveProduct"
@@ -62,7 +68,7 @@
                     </a>
 
                 </td>
-
+                }
                 <td>
                     <a asp-controller="Product"
                        asp-action="EditProduct"
