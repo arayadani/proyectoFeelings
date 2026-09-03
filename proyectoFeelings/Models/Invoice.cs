@@ -11,17 +11,16 @@ namespace proyectoFeelings.Models
         [ForeignKey("Store")]
         public int StoreID { get; set; }
 
-        [ForeignKey("Product")]
-
-        public int Price { get; set; }
-
         public DateTime Datetime { get; set; }
-        public Store Store { get; set; } // porq el framework lo pide 
 
+        public decimal Total { get; set; }
 
-        [ForeignKey("Product")]
+        // Navigation property
+        public Store Store { get; set; }
 
-        public ICollection<StoreProduct> StoreProduct { get; set; }
+        public ICollection<InvoiceDetail> InvoiceDetails { get; set; }
+            = new List<InvoiceDetail>();
+
     }
     
 }

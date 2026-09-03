@@ -48,28 +48,58 @@ namespace proyectoFeelings.Controllers
         {
             var currentUser = await userManager.GetUserAsync(User);
             var storeId = (currentUser)?.StoreID;
-            var product = new Product
-            {
-                Code = Convert.ToInt32(Product.Code),
-                Description = Product.Description,
-                Price = Convert.ToInt32(Product.Price),
-                Provider = Product.Provider,
-                Status = Product.Status,
-                Category = Product.Category,
 
-            };
-            _context.Product.Add(product);
-            await _context.SaveChangesAsync(); // Save the product to get the ProductID
-            var StoreProduct = new StoreProduct
+
+            var products = _context.Product
+                .Where(p => p.StoreProduct.Any(sp => sp.StoreID == storeId))
+                .Select(u => new ProductViewModel
+                {
+                    ProductID = u.ProductID,
+                    Code = u.Code,
+                    Description = u.Description,
+                    Price = u.Price,
+                    Provider = u.Provider,
+                    Status = u.Status,
+                    StoreID = u.StoreProduct.FirstOrDefault().StoreID, // Assuming you want the StoreID from the first StoreProduct
+                    Category = u.Category,
+                    Quantity = u.StoreProduct.FirstOrDefault().Quantity,
+                    StoreName = u.StoreProduct.FirstOrDefault().Store.StoreName // Assuming you want the StoreName from the first StoreProduct
+                })
+                .ToList();
+
+            bool codeExists = products.Any(p => p.Code == Product.Code);
+
+            if (codeExists) //si existe
             {
-                ProductID = product.ProductID,
-                StoreID = storeId ?? 0, // Assuming StoreID is an int, provide a default value if null
-                Quantity = Product.Quantity,
-            };
-            _context.StoreProduct.Add(StoreProduct);
-            await _context.SaveChangesAsync(); // Save the StoreProduct entity to the database
-            TempData["SuccessMessage"] = "Producto creado correctamente";
-            return RedirectToAction(nameof(ProductList));
+                
+                TempData["ErrorMessage"] = "Producto ya existe, no se creó.";
+                return RedirectToAction(nameof(ProductList));
+            }
+            else // no existe
+            {
+                var product = new Product
+                {
+                    Code = Convert.ToInt32(Product.Code),
+                    Description = Product.Description,
+                    Price = Convert.ToInt32(Product.Price),
+                    Provider = Product.Provider,
+                    Status = Product.Status,
+                    Category = Product.Category,
+
+                };
+                _context.Product.Add(product);
+                await _context.SaveChangesAsync(); // Save the product to get the ProductID
+                var StoreProduct = new StoreProduct
+                {
+                    ProductID = product.ProductID,
+                    StoreID = storeId ?? 0, // Assuming StoreID is an int, provide a default value if null
+                    Quantity = Product.Quantity,
+                };
+                _context.StoreProduct.Add(StoreProduct);
+                await _context.SaveChangesAsync(); // Save the StoreProduct entity to the database
+                TempData["SuccessMessage"] = "Producto creado correctamente";
+                return RedirectToAction(nameof(ProductList));
+            }
         }
 
 
