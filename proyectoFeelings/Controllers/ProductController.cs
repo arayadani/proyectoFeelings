@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
 using proyectoFeelings.ViewModels;
+using System.Net.NetworkInformation;
 
 namespace proyectoFeelings.Controllers
 {
@@ -178,11 +179,22 @@ namespace proyectoFeelings.Controllers
             var storeId = (currentUser)?.StoreID;
 
             var product = await _context.Product.FindAsync(model.ProductID);
+            //  var currentproduct = await _context.Product.FindAsync(model.ProductID);
+
+           
+
             var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, model.StoreID);
             if (product == null || storeProduct == null)
             {
                 return NotFound();
             }
+            var Description = product.Description;
+            var Category = product.Category;
+            var Provider = product.Provider;
+            var Status = product.Status;
+            var CurrentPrice = product.Price;
+            var Quantity = storeProduct.Quantity;
+
 
             // Update the product properties
             product.Code = Convert.ToInt32(model.Code);
@@ -200,12 +212,23 @@ namespace proyectoFeelings.Controllers
             {
                 ProductID = (int)model.ProductID,
                 CurrentStoreID = model.StoreID,
-                //NewStoreID = userStoreID ?? 0, // Assuming StoreID is an int, provide a default value if null
                 Type = 3,
-                Quantity = model.Quantity,
+                Quantity = storeProduct.Quantity,
                 DateTime = DateTime.Now,
                 Active = false,
-                Comment = model.Comment
+                Comment = model.Comment,
+                CurrentPrice = CurrentPrice,
+                NewPrice = CurrentPrice != model.Price ? Convert.ToInt32(model.Price) : null,
+                NewCategory = Category != model.Category ? model.Category : null,
+                NewDescription = Description != model.Description ? model.Description : null,
+                NewProvider = Provider != model.Provider ? model.Provider : null,
+                NewStatus = Status != model.Status ? model.Status : null,
+                NewQuantity = Quantity != model.Quantity ? model.Quantity : null,
+                Description =Description,
+                Category = Category,
+                Provider = Provider,
+                Status = Status,
+                
             };
             _context.Record.Add(record);
             await _context.SaveChangesAsync();
@@ -275,12 +298,12 @@ namespace proyectoFeelings.Controllers
             // Proyectar a ViewModel en memoria (ya no hay ValueTask ni async en la proyección)
             var notifications = records.Select(u => new RecordViewModel
             {
-                ProductID = u.ProductID,
+                ProductID = (int)u.ProductID,
                 Code = u.Product?.Code ?? 0,
                 Description = u.Product?.Description,
                 Provider = u.Product?.Provider,
                 CurrentStoreID = u.CurrentStoreID,
-                Quantity = u.Quantity,
+                Quantity = (int)u.Quantity,
                 DateTime = u.DateTime,
                 Type = u.Type,
                 Comment = u.Comment,
@@ -349,13 +372,18 @@ namespace proyectoFeelings.Controllers
         {
             var currentUser = await userManager.GetUserAsync(User);
             var userStoreID = (currentUser)?.StoreID;
+            var product = await _context.Product.FindAsync(model.ProductID);
+            var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, model.CurrentStoreID);
+
+
             var record = new Record
             {
                 ProductID = model.ProductID,
                 CurrentStoreID = model.CurrentStoreID,
                 NewStoreID = userStoreID ?? 0, // Assuming StoreID is an int, provide a default value if null
                 Type = 1,
-                Quantity = model.Quantity,
+                Quantity = storeProduct.Quantity,
+                NewQuantity = model.Quantity,
                 DateTime = DateTime.Now,
                 Active = true,
                 Comment = model.Comment
