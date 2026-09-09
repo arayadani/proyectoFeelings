@@ -312,6 +312,9 @@ namespace proyectoFeelings.Controllers
                 Category = u.Product?.Category,
                 NewStoreName = u.NewStoreID.HasValue && stores.TryGetValue(u.NewStoreID.Value, out var ns) ? ns.StoreName : null,
                 CurrentStoreName = stores.TryGetValue(u.CurrentStoreID, out var cs) ? cs.StoreName : null,
+                NewQuantity = u.NewQuantity,
+
+
             }).ToList();
 
             return View(notifications);
@@ -383,7 +386,7 @@ namespace proyectoFeelings.Controllers
                 NewStoreID = userStoreID ?? 0, // Assuming StoreID is an int, provide a default value if null
                 Type = 1,
                 Quantity = storeProduct.Quantity,
-                NewQuantity = model.Quantity,
+                NewQuantity = (storeProduct.Quantity - model.Quantity),
                 DateTime = DateTime.Now,
                 Active = true,
                 Comment = model.Comment
@@ -395,7 +398,7 @@ namespace proyectoFeelings.Controllers
 
         }
 
-        public async Task<IActionResult> ApproveMove(int ProductID, int CurrentStoreID, int NewStoreID, int Quantity, int Code, string Provider, string Description, int Price, string Category)
+        public async Task<IActionResult> ApproveMove(int ProductID, int CurrentStoreID, int NewStoreID, int Quantity, int Code, string Provider, string Description,int NewQuantity, int Price, string Category)
         {
             var product1 = await _context.Product
            .Include(p => p.StoreProduct)
@@ -460,9 +463,10 @@ namespace proyectoFeelings.Controllers
                 NewStoreID = NewStoreID,
                 Type = 1,
                 Quantity = Quantity,
+                NewQuantity = NewQuantity,
                 DateTime = DateTime.Now,
                 Active = false,
-                Comment = $"Se rebajaron {Quantity} productos"
+                Comment = $"Se rebajaron {Quantity-NewQuantity} productos"
             };
             _context.Record.Add(record1);
             var record2 = new Record
@@ -471,7 +475,7 @@ namespace proyectoFeelings.Controllers
                 CurrentStoreID = CurrentStoreID,
                 NewStoreID = NewStoreID,
                 Type = 1,
-                Quantity = Quantity,
+              //  Quantity = NewstoreProduct.Quantity,
                 DateTime = DateTime.Now,
                 Active = false,
                 Comment = $"Se adicionaron {Quantity} productos"

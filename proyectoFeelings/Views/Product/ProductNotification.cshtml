@@ -60,7 +60,14 @@
                 </td>
                 <td>@(record.Code)</td>
                 <td>@(record.Description)</td>
-                <td>@(record.Quantity)</td>
+                @if (record.Type == 1)
+                {
+                    <td>@(record.Quantity - record.NewQuantity)</td>
+                }
+                else
+                {
+                    <td>@(record.Quantity)</td>
+                }
                 <td>@(record.Provider)</td>
                 <td>@(record.Price)</td>
                 <td>@(record.Category)</td>
@@ -77,6 +84,7 @@
                            asp-route-CurrentStoreID="@record.CurrentStoreID"
                            asp-route-NewStoreID="@record.NewStoreID"
                            asp-route-Quantity="@record.Quantity"
+                           asp-route-NewQuantity="(@record.Quantity-@record.NewQuantity)"
                            asp-route-Code="@record.Code"
                            asp-route-Description="@record.Description"
                            asp-route-Provider="@record.Provider"
