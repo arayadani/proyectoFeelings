@@ -316,6 +316,7 @@ namespace proyectoFeelings.Controllers
 
 
             }).ToList();
+        //    Console.WriteLine(notifications + "HOLA TESTEO"); // Debugging line
 
             return View(notifications);
         }
@@ -408,7 +409,7 @@ namespace proyectoFeelings.Controllers
       );
 
             var CurrentStoreProduct = await _context.StoreProduct.FindAsync(ProductID, CurrentStoreID);
-
+            var NewstoreProduct = new StoreProduct() ;
 
             if (product1 == null)
             {
@@ -427,7 +428,7 @@ namespace proyectoFeelings.Controllers
                 {
                     ProductID = product.ProductID,
                     StoreID = NewStoreID, // Assuming StoreID is an int, provide a default value if null
-                    Quantity = Quantity,
+                    Quantity = (Quantity - NewQuantity),
                 };
                 _context.StoreProduct.Add(StoreProduct);
                 await _context.SaveChangesAsync(); // Save the product to get the ProductID
@@ -435,10 +436,10 @@ namespace proyectoFeelings.Controllers
             //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
             else
             {
-                var NewstoreProduct = await _context.StoreProduct.FindAsync(product1.ProductID, NewStoreID);
-                NewstoreProduct.Quantity += Quantity;
+                NewstoreProduct = await _context.StoreProduct.FindAsync(product1.ProductID, NewStoreID);
+                NewstoreProduct.Quantity += Math.Abs(Quantity - NewQuantity);
             }
-                CurrentStoreProduct.Quantity -= Quantity;
+                CurrentStoreProduct.Quantity -= Math.Abs(Quantity - NewQuantity);
 
             // Update the storeProduct properties
             var record = await _context.Record
@@ -446,7 +447,7 @@ namespace proyectoFeelings.Controllers
                                          r.CurrentStoreID == CurrentStoreID &&
                                          r.NewStoreID == NewStoreID &&
                                          r.Active == true &&
-                                         r.Quantity == Quantity &&
+                                        // r.Quantity == Quantity &&
                                          r.ProductID == ProductID);
 
             if (record == null)
@@ -475,10 +476,11 @@ namespace proyectoFeelings.Controllers
                 CurrentStoreID = CurrentStoreID,
                 NewStoreID = NewStoreID,
                 Type = 1,
-              //  Quantity = NewstoreProduct.Quantity,
+                Quantity = NewstoreProduct.Quantity == Math.Abs(Quantity - NewQuantity) ? 0: (NewstoreProduct.Quantity),
+                NewQuantity = NewstoreProduct.Quantity == Math.Abs(Quantity - NewQuantity) ? (NewstoreProduct.Quantity) : ( NewstoreProduct.Quantity +  Math.Abs(Quantity - NewQuantity)),
                 DateTime = DateTime.Now,
                 Active = false,
-                Comment = $"Se adicionaron {Quantity} productos"
+                Comment = $"Se adicionaron {Quantity - NewQuantity} productos"
             };
             _context.Record.Add(record2);
             await _context.SaveChangesAsync();
