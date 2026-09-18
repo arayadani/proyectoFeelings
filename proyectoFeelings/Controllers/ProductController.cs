@@ -98,6 +98,8 @@ namespace proyectoFeelings.Controllers
                 };
                 _context.StoreProduct.Add(StoreProduct);
                 await _context.SaveChangesAsync(); // Save the StoreProduct entity to the database
+                product.StoreProduct.Add(StoreProduct); // Add the StoreProduct to the Product's collection
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Producto creado correctamente";
                 return RedirectToAction(nameof(ProductList));
             }
@@ -253,21 +255,21 @@ namespace proyectoFeelings.Controllers
             var storeId = (currentUser)?.StoreID;
 
             var Products = _context.Product
-            .Where(p => p.StoreProduct.Any(sp => sp.StoreID != storeId))
-        .Select(u => new ProductViewModel
-        {
-            ProductID = u.ProductID,
-            Code = u.Code,
-            Description = u.Description,
-            Price = u.Price,
-            Provider = u.Provider,
-            Status = u.Status,
-            StoreID = u.StoreProduct.FirstOrDefault().StoreID, // Assuming you want the StoreID from the first StoreProduct
-            Category = u.Category,
-            Quantity = u.StoreProduct.FirstOrDefault().Quantity,
-            StoreName = u.StoreProduct.FirstOrDefault().Store.StoreName // Assuming you want the StoreName from the first StoreProduct
-
-        })
+        .SelectMany(p => p.StoreProduct
+            .Where(sp => sp.StoreID != storeId)
+            .Select(sp => new ProductViewModel
+            {
+                ProductID = p.ProductID,
+                Code = p.Code,
+                Description = p.Description,
+                Price = p.Price,
+                Provider = p.Provider,
+                Status = p.Status,
+                StoreID = sp.StoreID,
+                Category = p.Category,
+                Quantity = sp.Quantity,
+                StoreName = sp.Store.StoreName
+            }))
         .ToList();
 
             return View(Products);
@@ -413,25 +415,20 @@ namespace proyectoFeelings.Controllers
 
             if (product1 == null)
             {
-                var product = new Product
-                {
-                    Code = Code,
-                    Description = Description,
-                    Price = Price,
-                    Provider = Provider,
-                    Status = true,
-                    Category = Category,
-                };
-                _context.Product.Add(product);
-                await _context.SaveChangesAsync(); // Save the product to get the ProductID
+                
+               //await _context.SaveChangesAsync(); // Save the product to get the ProductID
                 var StoreProduct = new StoreProduct
                 {
-                    ProductID = product.ProductID,
+                    ProductID = ProductID,
                     StoreID = NewStoreID, // Assuming StoreID is an int, provide a default value if null
-                    Quantity = (Quantity - NewQuantity),
+                    Quantity = Math.Abs(Quantity - NewQuantity),
                 };
                 _context.StoreProduct.Add(StoreProduct);
+                var product2 = await _context.Product.FindAsync(ProductID);
+                Console.WriteLine(product2.ProductID + "testeo");
+                product2.StoreProduct.Add(StoreProduct); // Add the StoreProduct to the Product's collection
                 await _context.SaveChangesAsync(); // Save the product to get the ProductID
+
             }
             //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
             else
@@ -476,8 +473,8 @@ namespace proyectoFeelings.Controllers
                 CurrentStoreID = CurrentStoreID,
                 NewStoreID = NewStoreID,
                 Type = 1,
-                Quantity = NewstoreProduct.Quantity == Math.Abs(Quantity - NewQuantity) ? 0: (NewstoreProduct.Quantity),
-                NewQuantity = NewstoreProduct.Quantity == Math.Abs(Quantity - NewQuantity) ? (NewstoreProduct.Quantity) : ( NewstoreProduct.Quantity +  Math.Abs(Quantity - NewQuantity)),
+                Quantity = NewstoreProduct.Quantity,
+                NewQuantity = NewstoreProduct.Quantity + Math.Abs(Quantity - NewQuantity),
                 DateTime = DateTime.Now,
                 Active = false,
                 Comment = $"Se adicionaron {Quantity - NewQuantity} productos"
