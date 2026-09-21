@@ -255,6 +255,9 @@ namespace proyectoFeelings.Migrations
                     b.Property<bool?>("Active")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("AdminAccess")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
@@ -274,10 +277,25 @@ namespace proyectoFeelings.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("NewAdminAccess")
+                        .HasColumnType("bit");
+
                     b.Property<string>("NewCategory")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NewDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewFullName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("NewPrice")
@@ -295,6 +313,21 @@ namespace proyectoFeelings.Migrations
                     b.Property<int?>("NewStoreID")
                         .HasColumnType("int");
 
+                    b.Property<string>("NewStoreLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewStoreName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewStorePhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewUserPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("NewUserStoreId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ProductID")
                         .HasColumnType("int");
 
@@ -307,7 +340,22 @@ namespace proyectoFeelings.Migrations
                     b.Property<bool?>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<string>("StoreLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StoreName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StorePhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserStoreId")
                         .HasColumnType("int");
 
                     b.HasKey("RecordId");

@@ -39,5 +39,40 @@ namespace proyectoFeelings.Models
 
         public string? NewCategory { get; set; }
 
+        ////USER MODEL
+
+        public string? FullName { get; set; }
+
+        public string? NewFullName { get; set; }
+
+        public string? Email { get; set; }
+        public string? NewEmail { get; set; }
+
+        public int? UserStoreId { get; set; }
+        public int? NewUserStoreId { get; set; }
+
+        public bool? AdminAccess { get; set; }
+        public bool? NewAdminAccess { get; set; }
+
+      //  public bool? Status { get; set; }
+      //  public bool? NewStatus { get; set; }
+
+        public string? UserPhoneNumber { get; set; }
+        public string? NewUserPhoneNumber { get; set; }
+
+        //// STORE MODEL
+        public string? StoreName { get; set; }
+
+        public string? NewStoreName { get; set; }
+
+        public string? StorePhoneNumber { get; set; }
+        public string? NewStorePhoneNumber { get; set; }
+
+        public string? StoreLocation { get; set; }
+        public string? NewStoreLocation { get; set; }
+
+     
+
+
     }
 }

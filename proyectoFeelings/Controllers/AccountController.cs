@@ -112,6 +112,7 @@ namespace proyectoFeelings.Controllers
             }
           
 
+
             var model = new UserViewModel
             {
                 Id = user.Id,
@@ -133,7 +134,6 @@ namespace proyectoFeelings.Controllers
                   })
                   .ToList();
 
-
             return View(model);
         }
         // post: account/edituser/<userId>
@@ -144,7 +144,12 @@ namespace proyectoFeelings.Controllers
         {
         
             var user = await userManager.FindByIdAsync(model.Id);
-
+            var OldFullName = user.FullName;
+            var OldEmail = user.Email;
+            var OldAdminAccess = user.AdminAccess;
+            var OldStoreId = user.StoreID;
+            var OldUserPhoneNumber = user.PhoneNumber;
+            var OldStatus = user.Status;
             if (user == null)
             {
                 Console.WriteLine("Usuario no encontrado");
@@ -188,6 +193,27 @@ namespace proyectoFeelings.Controllers
                     }
                     await userManager.AddToRoleAsync(user, "User");
                 }
+                var record2 = new Record
+                {
+                    FullName = OldFullName,
+                    NewFullName = model.FullName,
+                    Email = OldEmail,
+                    NewEmail = model.Email,
+                    AdminAccess = OldAdminAccess,
+                    NewAdminAccess = model.AdminAccess,
+                    UserStoreId = OldStoreId,
+                    NewUserStoreId = model.StoreId,
+                    UserPhoneNumber = OldUserPhoneNumber,
+                    NewUserPhoneNumber = model.PhoneNumber,
+                    Status = OldStatus,
+                    NewStatus = model.Status,
+                    DateTime = DateTime.Now,
+                    Active = false,
+                    Type = 4,
+                    Comment = $"Se editó el usuario {model.Email}"
+                };
+                _context.Record.Add(record2);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(UserList));
             }
 
@@ -246,6 +272,21 @@ namespace proyectoFeelings.Controllers
                     {
                         await userManager.AddToRoleAsync(user, "User");
                     }
+                    var record2 = new Record
+                    {
+                        FullName = model.Email,
+                        Email = model.Email,
+                        AdminAccess = model.AdminAccess,
+                        UserStoreId = model.StoreId,
+                        UserPhoneNumber = model.PhoneNumber,
+                        Status = model.Status,
+                        DateTime = DateTime.Now,
+                        Active = false,
+                        Type = 4,
+                        Comment = $"Se creo el usuario {model.Email}"
+                    };
+                    _context.Record.Add(record2);
+                    await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Usuario creado correctamente";
                     return RedirectToAction(nameof(UserList));
                 }

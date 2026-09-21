@@ -12,8 +12,8 @@ using proyectoFeelings.Data;
 namespace proyectoFeelings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260903044636_migration55")]
-    partial class migration55
+    [Migration("20260921183627_migration1")]
+    partial class migration1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,6 +158,62 @@ namespace proyectoFeelings.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("proyectoFeelings.Models.Invoice", b =>
+                {
+                    b.Property<int>("InvoiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceId"));
+
+                    b.Property<DateTime>("Datetime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StoreID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("InvoiceId");
+
+                    b.HasIndex("StoreID");
+
+                    b.ToTable("Invoice");
+                });
+
+            modelBuilder.Entity("proyectoFeelings.Models.InvoiceDetail", b =>
+                {
+                    b.Property<int>("InvoiceDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InvoiceDetailId"));
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("InvoiceDetailId");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("InvoiceDetail");
+                });
+
             modelBuilder.Entity("proyectoFeelings.Models.Product", b =>
                 {
                     b.Property<int>("ProductID")
@@ -202,9 +258,18 @@ namespace proyectoFeelings.Migrations
                     b.Property<bool?>("Active")
                         .HasColumnType("bit");
 
+                    b.Property<bool?>("AdminAccess")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CurrentPrice")
+                        .HasColumnType("int");
 
                     b.Property<int>("CurrentStoreID")
                         .HasColumnType("int");
@@ -212,21 +277,91 @@ namespace proyectoFeelings.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("NewAdminAccess")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NewCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewFullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("NewPrice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NewProvider")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("NewQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("NewStatus")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("NewStoreID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductID")
+                    b.Property<string>("NewStoreLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewStoreName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewStorePhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewUserPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("NewUserStoreId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
+                    b.Property<int?>("ProductID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Provider")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("StoreLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StoreName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StorePhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.HasKey("RecordId");
+                    b.Property<string>("UserPhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("CurrentStoreID");
+                    b.Property<int?>("UserStoreId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RecordId");
 
                     b.HasIndex("ProductID");
 
@@ -410,11 +545,22 @@ namespace proyectoFeelings.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("proyectoFeelings.Models.Record", b =>
+            modelBuilder.Entity("proyectoFeelings.Models.Invoice", b =>
                 {
                     b.HasOne("proyectoFeelings.Models.Store", "Store")
                         .WithMany()
-                        .HasForeignKey("CurrentStoreID")
+                        .HasForeignKey("StoreID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("proyectoFeelings.Models.InvoiceDetail", b =>
+                {
+                    b.HasOne("proyectoFeelings.Models.Invoice", "Invoice")
+                        .WithMany("InvoiceDetails")
+                        .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -424,9 +570,18 @@ namespace proyectoFeelings.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.Navigation("Invoice");
 
-                    b.Navigation("Store");
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("proyectoFeelings.Models.Record", b =>
+                {
+                    b.HasOne("proyectoFeelings.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("proyectoFeelings.Models.StoreProduct", b =>
@@ -455,6 +610,11 @@ namespace proyectoFeelings.Migrations
                         .HasForeignKey("StoreID");
 
                     b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("proyectoFeelings.Models.Invoice", b =>
+                {
+                    b.Navigation("InvoiceDetails");
                 });
 
             modelBuilder.Entity("proyectoFeelings.Models.Product", b =>

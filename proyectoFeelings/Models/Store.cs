@@ -8,6 +8,7 @@ namespace proyectoFeelings.Models
         [Key]
         public int StoreID { get; set; }
         public string StoreName { get; set; }
+
         public string PhoneNumber { get; set; }
         public string Location { get; set; }
         public bool Status { get; set; }

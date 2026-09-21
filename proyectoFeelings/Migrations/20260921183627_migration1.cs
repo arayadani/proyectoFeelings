@@ -81,6 +81,58 @@ namespace proyectoFeelings.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Record",
+                columns: table => new
+                {
+                    RecordId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<int>(type: "int", nullable: true),
+                    NewQuantity = table.Column<int>(type: "int", nullable: true),
+                    Active = table.Column<bool>(type: "bit", nullable: true),
+                    ProductID = table.Column<int>(type: "int", nullable: true),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CurrentStoreID = table.Column<int>(type: "int", nullable: false),
+                    NewStoreID = table.Column<int>(type: "int", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CurrentPrice = table.Column<int>(type: "int", nullable: true),
+                    NewPrice = table.Column<int>(type: "int", nullable: true),
+                    Provider = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewProvider = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: true),
+                    NewStatus = table.Column<bool>(type: "bit", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewCategory = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewFullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserStoreId = table.Column<int>(type: "int", nullable: true),
+                    NewUserStoreId = table.Column<int>(type: "int", nullable: true),
+                    AdminAccess = table.Column<bool>(type: "bit", nullable: true),
+                    NewAdminAccess = table.Column<bool>(type: "bit", nullable: true),
+                    UserPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewUserPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StoreName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewStoreName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StorePhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewStorePhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StoreLocation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewStoreLocation = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Record", x => x.RecordId);
+                    table.ForeignKey(
+                        name: "FK_Record_Product_ProductID",
+                        column: x => x.ProductID,
+                        principalTable: "Product",
+                        principalColumn: "ProductID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -115,32 +167,21 @@ namespace proyectoFeelings.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Record",
+                name: "Invoice",
                 columns: table => new
                 {
-                    RecordId = table.Column<int>(type: "int", nullable: false)
+                    InvoiceId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: true),
-                    ProductID = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CurrentStoreID = table.Column<int>(type: "int", nullable: false),
-                    NewStoreID = table.Column<int>(type: "int", nullable: true)
+                    StoreID = table.Column<int>(type: "int", nullable: false),
+                    Datetime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Record", x => x.RecordId);
+                    table.PrimaryKey("PK_Invoice", x => x.InvoiceId);
                     table.ForeignKey(
-                        name: "FK_Record_Product_ProductID",
-                        column: x => x.ProductID,
-                        principalTable: "Product",
-                        principalColumn: "ProductID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Record_Store_CurrentStoreID",
-                        column: x => x.CurrentStoreID,
+                        name: "FK_Invoice_Store_StoreID",
+                        column: x => x.StoreID,
                         principalTable: "Store",
                         principalColumn: "StoreID",
                         onDelete: ReferentialAction.Cascade);
@@ -256,6 +297,35 @@ namespace proyectoFeelings.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "InvoiceDetail",
+                columns: table => new
+                {
+                    InvoiceDetailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InvoiceId = table.Column<int>(type: "int", nullable: false),
+                    ProductID = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Subtotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvoiceDetail", x => x.InvoiceDetailId);
+                    table.ForeignKey(
+                        name: "FK_InvoiceDetail_Invoice_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoice",
+                        principalColumn: "InvoiceId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_InvoiceDetail_Product_ProductID",
+                        column: x => x.ProductID,
+                        principalTable: "Product",
+                        principalColumn: "ProductID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -301,9 +371,19 @@ namespace proyectoFeelings.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Record_CurrentStoreID",
-                table: "Record",
-                column: "CurrentStoreID");
+                name: "IX_Invoice_StoreID",
+                table: "Invoice",
+                column: "StoreID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvoiceDetail_InvoiceId",
+                table: "InvoiceDetail",
+                column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvoiceDetail_ProductID",
+                table: "InvoiceDetail",
+                column: "ProductID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Record_ProductID",
@@ -335,6 +415,9 @@ namespace proyectoFeelings.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "InvoiceDetail");
+
+            migrationBuilder.DropTable(
                 name: "Record");
 
             migrationBuilder.DropTable(
@@ -345,6 +428,9 @@ namespace proyectoFeelings.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Invoice");
 
             migrationBuilder.DropTable(
                 name: "Product");
