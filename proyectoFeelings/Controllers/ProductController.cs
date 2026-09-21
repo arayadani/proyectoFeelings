@@ -115,22 +115,33 @@ namespace proyectoFeelings.Controllers
             var storeId = (currentUser)?.StoreID;
 
             var Products = _context.Product
-            .Where(p => p.StoreProduct.Any(sp => sp.StoreID == storeId))
-        .Select(u => new ProductViewModel
-        {
-            ProductID = u.ProductID,
-            Code = u.Code,
-            Description = u.Description,
-            Price = u.Price,
-            Provider = u.Provider,
-            Status = u.Status,
-            StoreID = u.StoreProduct.FirstOrDefault().StoreID, // Assuming you want the StoreID from the first StoreProduct
-            Category = u.Category,
-            Quantity = u.StoreProduct.FirstOrDefault().Quantity,
-            StoreName = u.StoreProduct.FirstOrDefault().Store.StoreName // Assuming you want the StoreName from the first StoreProduct
+      .Where(p => p.StoreProduct.Any(sp => sp.StoreID == storeId))
+      .Select(u => new ProductViewModel
+      {
+          ProductID = u.ProductID,
+          Code = u.Code,
+          Description = u.Description,
+          Price = u.Price,
+          Provider = u.Provider,
+          Status = u.Status,
+          Category = u.Category,
 
-        })
-        .ToList();
+          StoreID = u.StoreProduct
+              .Where(sp => sp.StoreID == storeId)
+              .Select(sp => sp.StoreID)
+              .FirstOrDefault(),
+
+          Quantity = u.StoreProduct
+              .Where(sp => sp.StoreID == storeId)
+              .Select(sp => sp.Quantity)
+              .FirstOrDefault(),
+
+          StoreName = u.StoreProduct
+              .Where(sp => sp.StoreID == storeId)
+              .Select(sp => sp.Store.StoreName)
+              .FirstOrDefault()
+      })
+      .ToList();
 
             return View(Products);
 
@@ -425,10 +436,9 @@ namespace proyectoFeelings.Controllers
                 };
                 _context.StoreProduct.Add(StoreProduct);
                 var product2 = await _context.Product.FindAsync(ProductID);
-                Console.WriteLine(product2.ProductID + "testeo");
                 product2.StoreProduct.Add(StoreProduct); // Add the StoreProduct to the Product's collection
                 await _context.SaveChangesAsync(); // Save the product to get the ProductID
-
+                NewstoreProduct = StoreProduct;
             }
             //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
             else
@@ -473,8 +483,8 @@ namespace proyectoFeelings.Controllers
                 CurrentStoreID = CurrentStoreID,
                 NewStoreID = NewStoreID,
                 Type = 1,
-                Quantity = NewstoreProduct.Quantity,
-                NewQuantity = NewstoreProduct.Quantity + Math.Abs(Quantity - NewQuantity),
+                Quantity = NewstoreProduct.Quantity - Math.Abs(Quantity - NewQuantity),
+                NewQuantity = NewstoreProduct.Quantity,
                 DateTime = DateTime.Now,
                 Active = false,
                 Comment = $"Se adicionaron {Quantity - NewQuantity} productos"
