@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyectoFeelings.Data;
 
@@ -11,9 +12,11 @@ using proyectoFeelings.Data;
 namespace proyectoFeelings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260903044814_migration57")]
+    partial class migration57
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,15 +258,9 @@ namespace proyectoFeelings.Migrations
                     b.Property<bool?>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Category")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CurrentPrice")
-                        .HasColumnType("int");
 
                     b.Property<int>("CurrentStoreID")
                         .HasColumnType("int");
@@ -271,46 +268,21 @@ namespace proyectoFeelings.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NewCategory")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NewDescription")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("NewPrice")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NewProvider")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("NewQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("NewStatus")
-                        .HasColumnType("bit");
-
                     b.Property<int?>("NewStoreID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProductID")
+                    b.Property<int>("ProductID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Provider")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Quantity")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("Status")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("RecordId");
+
+                    b.HasIndex("CurrentStoreID");
 
                     b.HasIndex("ProductID");
 
@@ -526,11 +498,21 @@ namespace proyectoFeelings.Migrations
 
             modelBuilder.Entity("proyectoFeelings.Models.Record", b =>
                 {
+                    b.HasOne("proyectoFeelings.Models.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("CurrentStoreID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("proyectoFeelings.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductID");
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("proyectoFeelings.Models.StoreProduct", b =>

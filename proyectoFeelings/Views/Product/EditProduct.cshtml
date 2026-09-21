@@ -1,0 +1,112 @@
+﻿@model proyectoFeelings.ViewModels.ProductViewModel
+
+@{
+    ViewData["Title"] = "Editar Producto";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="EditProduct" method="post">
+
+    <input asp-for="ProductID" type="hidden" />
+    <input asp-for="StoreID" type="hidden" />
+
+        
+ <div class="mb-3">
+    <label asp-for="Quantity" class="form-label">Cantidad</label>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <input asp-for="Quantity" class="form-control" min="0" />
+    }
+    else
+    {
+        <input asp-for="Quantity" class="form-control" min="@Model.Quantity" />
+    }
+
+    <span asp-validation-for="Quantity" class="text-danger"></span>
+</div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Descripcion</label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Price" class="form-label">Precio</label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Provider" class="form-label">Proveedor</label>
+        <select asp-for="Provider" class="form-select">
+            <option value="">Seleccione un proveedor</option>
+            <option value="Maryfer">Maryfer</option>
+            <option value="Cajas Fragil">Cajas Fragil</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <span asp-validation-for="Provider" class="text-danger"></span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="Category" class="form-label">Categoria</label>
+        <select asp-for="Category" class="form-select">
+            <option value="">Seleccione una categoría</option>
+            <option value="Peluche">Peluche</option>
+            <option value="Globos">Globos</option>
+            <option value="Cajas de madera">Cajas de madera</option>
+            <option value="Empaque">Empaque</option>
+            <option value="Cojin">Cojín</option>
+            <option value="Tarjetas">Tarjetas</option>
+            <option value="Graduacion">Graduación</option>
+            <option value="Amor">Amor</option>
+            <option value="Madre">Madre</option>
+            <option value="Papa">Papá</option>
+            <option value="Familia">Familia</option>
+            <option value="Otro">Otro</option>
+
+        </select>
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Code" class="form-label">Codigo(No se puede editar)</label>
+        <input asp-for="Code" class="form-control" readonly />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Status" class="form-check-input" />
+        <label asp-for="Status" class="form-check-label">Activo</label>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Comment" class="form-label">Comentario(OBLIGATORIO)</label>
+        <input asp-for="Comment" class="form-control" required />
+        <span asp-validation-for="Comment" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">
+       Editar
+
+    </button>
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="StoresInventory" class="btn btn-secondary">
+        Cancelar
+    </a>
+        }
+        else {
+            <a asp-action="ProductList" class="btn btn-secondary">  
+         Cancelar      
+        </a>
+
+       }
+
+
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

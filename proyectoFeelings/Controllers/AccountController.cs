@@ -29,7 +29,7 @@ namespace proyectoFeelings.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken] //Falsificación de Peticiones entre Sitios
 
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -52,12 +52,12 @@ namespace proyectoFeelings.Controllers
 
                }
            
-            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false); // crea la variable user y verifica que los variables matcheen con lo que ingresamos y entra o no al if
+            var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, lockoutOnFailure: false); // crea la variable user y verifica que los variables matcheen con lo que ingresamos y entra o no al if
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home"); // que si se hizo el login correctamente redirige al controlador de home
             }
-            ModelState.AddModelError(string.Empty, "Error al iniciar sesion");
+            ModelState.AddModelError(string.Empty, "Error al iniciar sesion");// si no se hace el login correctamente manda un error
             return View(model);
 
 
@@ -65,13 +65,37 @@ namespace proyectoFeelings.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken] //valida que el token de seguridad sea valido y no se pueda hacer un ataque de tipo CSRF
 
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
+        
+        [HttpGet]
+        public IActionResult UserList()
+        {
+            var users = _context.Users
+        .Select(u => new UserViewModel
+        {
+            Id = u.Id,
+            FullName = u.FullName,
+            Email = u.Email,
+            PhoneNumber = u.PhoneNumber,
+            Status = u.Status,
+            AdminAccess = u.AdminAccess,
+            StoreId = (int)u.StoreID,
+            StoreName = u.Store.StoreName // Assuming you have a navigation property to Store in your User model
+
+        })
+        .ToList();
+
+            return View(users);
+
+        }
+
+
         [HttpGet]
         // get: account/edituser/<userId>
         public async Task<IActionResult> EditUser(String Id)
@@ -86,7 +110,8 @@ namespace proyectoFeelings.Controllers
                 return NotFound();
 
             }
-            //   return View(user);
+          
+
             var model = new UserViewModel
             {
                 Id = user.Id,
@@ -99,28 +124,17 @@ namespace proyectoFeelings.Controllers
                 // Add any other properties your ViewModel contains
             };
 
+            model.Stores = _context.Store
+          
+                  .Select(s => new SelectListItem
+                  {
+                      Value = s.StoreID.ToString(),
+                      Text = s.StoreName
+                  })
+                  .ToList();
+
+
             return View(model);
-        }
-        [HttpGet]
-        public IActionResult UserList()
-        {
-            var users = _context.Users
-        .Select(u => new UserViewModel
-        {
-            Id = u.Id,
-            FullName = u.FullName,
-            Email = u.Email,
-            PhoneNumber = u.PhoneNumber,
-            Status = u.Status,
-            AdminAccess = u.AdminAccess,
-            StoreId = (int)u.StoreID,
-
-        })
-        .ToList();
-
-            return View(users);
-            //var users = _context.Users.ToList();
-            //  return View(users);
         }
         // post: account/edituser/<userId>
 
@@ -262,34 +276,8 @@ namespace proyectoFeelings.Controllers
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteUser(String id)
-        {
-            var user = await userManager.FindByIdAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var result = await userManager.DeleteAsync(user);
-
-            if (result.Succeeded)
-            {
-                TempData["SuccessMessage"] = "Se elimino el usuario correctamente";
-                return RedirectToAction(nameof(UserList));
-            }
-
-            foreach (var error in result.Errors)
-            {
-               
-                ModelState.AddModelError("", error.Description);
-            }
-
-            return View(user);
-        }
-
+       
+        
         [HttpPost]
         public async Task<IActionResult> ChangePassword(UserViewModel model)
         {

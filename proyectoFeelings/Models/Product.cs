@@ -1,12 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace proyectoFeelings.Models
 {
+   // [Index(nameof(Code), IsUnique = true)]
     public class Product
     {
         [Key]
         public int ProductID { get; set; }
+        public int Code { get; set; }
         public string Description { get; set; }
+
         public int Price { get; set; }
         public string? Provider { get; set; }
         public bool Status { get; set; }

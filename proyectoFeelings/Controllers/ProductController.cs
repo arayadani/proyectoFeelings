@@ -1,0 +1,520 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using proyectoFeelings.Data;
+using proyectoFeelings.Models;
+using proyectoFeelings.ViewModels;
+using System.Net.NetworkInformation;
+
+namespace proyectoFeelings.Controllers
+{
+    public class ProductController : Controller
+    {
+        private readonly AppDbContext _context;
+        private readonly SignInManager<User> signInManager;
+        private readonly UserManager<User> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+        public ProductController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, AppDbContext context)
+        {
+
+            this._context = context;
+            this.signInManager = signInManager;
+            this.userManager = userManager;
+            this.roleManager = roleManager;
+        }
+        public IActionResult Index()
+        {
+            return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> CreateProduct()
+
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+            var model = new ProductViewModel
+            {
+                User = currentUser,
+                StoreID = storeId ?? 0 // Assuming StoreID is an int, provide a default value if null/
+
+                // Add any other properties your ViewModel contains
+            };
+            //  return View(currentUser);
+            return View(model);
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct(ProductViewModel Product)
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+
+
+            var products = _context.Product
+                .Where(p => p.StoreProduct.Any(sp => sp.StoreID == storeId))
+                .Select(u => new ProductViewModel
+                {
+                    ProductID = u.ProductID,
+                    Code = u.Code,
+                    Description = u.Description,
+                    Price = u.Price,
+                    Provider = u.Provider,
+                    Status = u.Status,
+                    StoreID = u.StoreProduct.FirstOrDefault().StoreID, // Assuming you want the StoreID from the first StoreProduct
+                    Category = u.Category,
+                    Quantity = u.StoreProduct.FirstOrDefault().Quantity,
+                    StoreName = u.StoreProduct.FirstOrDefault().Store.StoreName // Assuming you want the StoreName from the first StoreProduct
+                })
+                .ToList();
+
+            bool codeExists = products.Any(p => p.Code == Product.Code);
+
+            if (codeExists) //si existe
+            {
+                
+                TempData["ErrorMessage"] = "Producto ya existe, no se creó.";
+                return RedirectToAction(nameof(ProductList));
+            }
+            else // no existe
+            {
+                var product = new Product
+                {
+                    Code = Convert.ToInt32(Product.Code),
+                    Description = Product.Description,
+                    Price = Convert.ToInt32(Product.Price),
+                    Provider = Product.Provider,
+                    Status = Product.Status,
+                    Category = Product.Category,
+
+                };
+                _context.Product.Add(product);
+                await _context.SaveChangesAsync(); // Save the product to get the ProductID
+                var StoreProduct = new StoreProduct
+                {
+                    ProductID = product.ProductID,
+                    StoreID = storeId ?? 0, // Assuming StoreID is an int, provide a default value if null
+                    Quantity = Product.Quantity,
+                };
+                _context.StoreProduct.Add(StoreProduct);
+                await _context.SaveChangesAsync(); // Save the StoreProduct entity to the database
+                product.StoreProduct.Add(StoreProduct); // Add the StoreProduct to the Product's collection
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Producto creado correctamente";
+                return RedirectToAction(nameof(ProductList));
+            }
+        }
+
+
+        //ProductList
+        [HttpGet]
+        public async Task<IActionResult> ProductList()
+
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+
+            var Products = _context.Product
+      .Where(p => p.StoreProduct.Any(sp => sp.StoreID == storeId))
+      .Select(u => new ProductViewModel
+      {
+          ProductID = u.ProductID,
+          Code = u.Code,
+          Description = u.Description,
+          Price = u.Price,
+          Provider = u.Provider,
+          Status = u.Status,
+          Category = u.Category,
+
+          StoreID = u.StoreProduct
+              .Where(sp => sp.StoreID == storeId)
+              .Select(sp => sp.StoreID)
+              .FirstOrDefault(),
+
+          Quantity = u.StoreProduct
+              .Where(sp => sp.StoreID == storeId)
+              .Select(sp => sp.Quantity)
+              .FirstOrDefault(),
+
+          StoreName = u.StoreProduct
+              .Where(sp => sp.StoreID == storeId)
+              .Select(sp => sp.Store.StoreName)
+              .FirstOrDefault()
+      })
+      .ToList();
+
+            return View(Products);
+
+        }
+        //edit product
+
+        [HttpGet]
+        public async Task<IActionResult> EditProduct(int productId, int storeId)
+
+        {
+
+            if (productId == null || storeId == null)
+            {
+                return NotFound();
+            }
+            var product = await _context.Product.FindAsync(productId);
+            var storeProduct = await _context.StoreProduct.FindAsync(productId, storeId);
+
+            if (storeProduct == null)
+            {
+                return NotFound();
+
+            }
+
+            var model = new ProductViewModel
+            {
+                ProductID = product.ProductID,
+                Code = product.Code,
+                Description = product.Description,
+                Price = product.Price,
+                Provider = product.Provider,
+                Status = product.Status,
+                StoreID = storeProduct.StoreID, // Assuming you want the StoreID from the first StoreProduct
+                Category = product.Category,
+                Quantity = storeProduct.Quantity,
+
+            };
+
+            return View(model);
+
+        }
+        [HttpPost]
+
+        public async Task<IActionResult> EditProduct(ProductViewModel model)
+
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+
+            var product = await _context.Product.FindAsync(model.ProductID);
+            //  var currentproduct = await _context.Product.FindAsync(model.ProductID);
+
+           
+
+            var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, model.StoreID);
+            if (product == null || storeProduct == null)
+            {
+                return NotFound();
+            }
+            var Description = product.Description;
+            var Category = product.Category;
+            var Provider = product.Provider;
+            var Status = product.Status;
+            var CurrentPrice = product.Price;
+            var Quantity = storeProduct.Quantity;
+
+
+            // Update the product properties
+            product.Code = Convert.ToInt32(model.Code);
+            product.Description = model.Description;
+            product.Price = Convert.ToInt32(model.Price);
+            product.Provider = model.Provider;
+            product.Status = model.Status;
+            product.Category = model.Category;
+            
+
+            // Update the storeProduct properties
+            storeProduct.Quantity = Convert.ToInt32(model.Quantity);
+            await _context.SaveChangesAsync();
+            var record = new Record
+            {
+                ProductID = (int)model.ProductID,
+                CurrentStoreID = model.StoreID,
+                Type = 3,
+                Quantity = storeProduct.Quantity,
+                DateTime = DateTime.Now,
+                Active = false,
+                Comment = model.Comment,
+                CurrentPrice = CurrentPrice,
+                NewPrice = CurrentPrice != model.Price ? Convert.ToInt32(model.Price) : null,
+                NewCategory = Category != model.Category ? model.Category : null,
+                NewDescription = Description != model.Description ? model.Description : null,
+                NewProvider = Provider != model.Provider ? model.Provider : null,
+                NewStatus = Status != model.Status ? model.Status : null,
+                NewQuantity = Quantity != model.Quantity ? model.Quantity : null,
+                Description =Description,
+                Category = Category,
+                Provider = Provider,
+                Status = Status,
+                
+            };
+            _context.Record.Add(record);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Producto actualizado correctamente";
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction(nameof(StoresInventory));
+
+            }
+            else
+            {
+                return RedirectToAction(nameof(ProductList));
+
+            }
+        }
+        //General ProductList
+        [HttpGet]
+        public async Task<IActionResult> StoresInventory()
+
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+
+            var Products = _context.Product
+        .SelectMany(p => p.StoreProduct
+            .Where(sp => sp.StoreID != storeId)
+            .Select(sp => new ProductViewModel
+            {
+                ProductID = p.ProductID,
+                Code = p.Code,
+                Description = p.Description,
+                Price = p.Price,
+                Provider = p.Provider,
+                Status = p.Status,
+                StoreID = sp.StoreID,
+                Category = p.Category,
+                Quantity = sp.Quantity,
+                StoreName = sp.Store.StoreName
+            }))
+        .ToList();
+
+            return View(Products);
+
+        }
+        //Notificacion de productos
+        [HttpGet]
+        public async Task<IActionResult> ProductNotification() // este lista las notificaciones y las muestra en la vista 
+        {
+            // Cargar records activos con su Product
+            var records = await _context.Record
+                .Where(u => u.Active == true)
+                .Include(u => u.Product)
+                .ToListAsync();
+
+            // Recolectar los storeIds que necesitamos (current y new)
+            var storeIds = records
+                .Select(r => r.CurrentStoreID)
+                .Concat(records.Where(r => r.NewStoreID.HasValue)
+                               .Select(r => r.NewStoreID!.Value))
+                .Distinct();
+
+            // Cargar las tiendas necesarias en un diccionario para evitar múltiples consultas
+            var stores = await _context.Store
+                .Where(s => storeIds.Contains(s.StoreID))
+                .ToDictionaryAsync(s => s.StoreID);
+
+            // Proyectar a ViewModel en memoria (ya no hay ValueTask ni async en la proyección)
+            var notifications = records.Select(u => new RecordViewModel
+            {
+                ProductID = (int)u.ProductID,
+                Code = u.Product?.Code ?? 0,
+                Description = u.Product?.Description,
+                Provider = u.Product?.Provider,
+                CurrentStoreID = u.CurrentStoreID,
+                Quantity = (int)u.Quantity,
+                DateTime = u.DateTime,
+                Type = u.Type,
+                Comment = u.Comment,
+                NewStoreID = u.NewStoreID,
+                Price = u.Product?.Price ?? 0,
+                Category = u.Product?.Category,
+                NewStoreName = u.NewStoreID.HasValue && stores.TryGetValue(u.NewStoreID.Value, out var ns) ? ns.StoreName : null,
+                CurrentStoreName = stores.TryGetValue(u.CurrentStoreID, out var cs) ? cs.StoreName : null,
+                NewQuantity = u.NewQuantity,
+
+
+            }).ToList();
+        //    Console.WriteLine(notifications + "HOLA TESTEO"); // Debugging line
+
+            return View(notifications);
+        }
+        // ack la notificacion
+        [HttpGet]
+        public async Task<IActionResult> AckNotification(int ProductID, int StoreID, int Type)
+        {
+            var record = await _context.Record
+                .FirstOrDefaultAsync(r =>
+                    r.CurrentStoreID == StoreID &&
+                    r.Type == Type &&
+                    r.Active == true &&
+                    r.ProductID == ProductID);
+
+            if (record == null)
+            {
+                return NotFound();
+            }
+
+            record.Active = false;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Notificacion recibida correctamente";
+            return RedirectToAction(nameof(ProductNotification));
+
+        }
+        //trasladar producto
+
+        [HttpGet]
+        public async Task<IActionResult> MoveProduct(int productID, int storeID)
+        {
+
+            var currentUser = await userManager.GetUserAsync(User);
+            var userStoreID = (currentUser)?.StoreID;
+            var product = await _context.Product.FindAsync(productID);
+
+            var model = new RecordViewModel
+            {
+                CurrentStoreID = storeID,
+                ProductID = (int)product.ProductID,
+                NewStoreID = userStoreID,
+                NewStoreName = (await _context.Store.FindAsync(userStoreID))?.StoreName,
+                CurrentStoreName = (await _context.Store.FindAsync(storeID))?.StoreName,
+
+                Code = product.Code,
+                Type = 1, //esto es una operacion de traslado
+                Description = product.Description,
+                DateTime = DateTime.Now,
+            };
+
+            return View(model);
+
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> MoveProduct(RecordViewModel model)// CREA UN RECORD  
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var userStoreID = (currentUser)?.StoreID;
+            var product = await _context.Product.FindAsync(model.ProductID);
+            var storeProduct = await _context.StoreProduct.FindAsync(model.ProductID, model.CurrentStoreID);
+
+
+            var record = new Record
+            {
+                ProductID = model.ProductID,
+                CurrentStoreID = model.CurrentStoreID,
+                NewStoreID = userStoreID ?? 0, // Assuming StoreID is an int, provide a default value if null
+                Type = 1,
+                Quantity = storeProduct.Quantity,
+                NewQuantity = (storeProduct.Quantity - model.Quantity),
+                DateTime = DateTime.Now,
+                Active = true,
+                Comment = model.Comment
+            };
+            _context.Record.Add(record);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Trasladado solicitado correctamente";
+            return RedirectToAction(nameof(StoresInventory));
+
+        }
+
+        public async Task<IActionResult> ApproveMove(int ProductID, int CurrentStoreID, int NewStoreID, int Quantity, int Code, string Provider, string Description,int NewQuantity, int Price, string Category)
+        {
+            var product1 = await _context.Product
+           .Include(p => p.StoreProduct)
+           .FirstOrDefaultAsync(
+          p => p.Code == Code &&
+               p.StoreProduct.Any(sp => sp.StoreID == NewStoreID)
+      );
+
+            var CurrentStoreProduct = await _context.StoreProduct.FindAsync(ProductID, CurrentStoreID);
+            var NewstoreProduct = new StoreProduct() ;
+
+            if (product1 == null)
+            {
+                
+               //await _context.SaveChangesAsync(); // Save the product to get the ProductID
+                var StoreProduct = new StoreProduct
+                {
+                    ProductID = ProductID,
+                    StoreID = NewStoreID, // Assuming StoreID is an int, provide a default value if null
+                    Quantity = Math.Abs(Quantity - NewQuantity),
+                };
+                _context.StoreProduct.Add(StoreProduct);
+                var product2 = await _context.Product.FindAsync(ProductID);
+                product2.StoreProduct.Add(StoreProduct); // Add the StoreProduct to the Product's collection
+                await _context.SaveChangesAsync(); // Save the product to get the ProductID
+                NewstoreProduct = StoreProduct;
+            }
+            //el producto se encuentra en la tienda de destino, entonces se suma la cantidad
+            else
+            {
+                NewstoreProduct = await _context.StoreProduct.FindAsync(product1.ProductID, NewStoreID);
+                NewstoreProduct.Quantity += Math.Abs(Quantity - NewQuantity);
+            }
+                CurrentStoreProduct.Quantity -= Math.Abs(Quantity - NewQuantity);
+
+            // Update the storeProduct properties
+            var record = await _context.Record
+                                     .FirstOrDefaultAsync(r =>
+                                         r.CurrentStoreID == CurrentStoreID &&
+                                         r.NewStoreID == NewStoreID &&
+                                         r.Active == true &&
+                                        // r.Quantity == Quantity &&
+                                         r.ProductID == ProductID);
+
+            if (record == null)
+            {
+                return NotFound();
+            }
+
+            record.Active = false; 
+            await _context.SaveChangesAsync();
+            var record1 = new Record
+            {
+                ProductID = ProductID,
+                CurrentStoreID = CurrentStoreID,
+                NewStoreID = NewStoreID,
+                Type = 1,
+                Quantity = Quantity,
+                NewQuantity = NewQuantity,
+                DateTime = DateTime.Now,
+                Active = false,
+                Comment = $"Se rebajaron {Quantity-NewQuantity} productos"
+            };
+            _context.Record.Add(record1);
+            var record2 = new Record
+            {
+                ProductID = ProductID,
+                CurrentStoreID = CurrentStoreID,
+                NewStoreID = NewStoreID,
+                Type = 1,
+                Quantity = NewstoreProduct.Quantity - Math.Abs(Quantity - NewQuantity),
+                NewQuantity = NewstoreProduct.Quantity,
+                DateTime = DateTime.Now,
+                Active = false,
+                Comment = $"Se adicionaron {Quantity - NewQuantity} productos"
+            };
+            _context.Record.Add(record2);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Producto trasladado correctamente";
+            return RedirectToAction(nameof(ProductNotification));
+
+        }
+
+        public async Task<IActionResult> RejectMove(int ProductID, int StoreID, int Type)
+        {
+            var record = await _context.Record
+                          .FirstOrDefaultAsync(r =>
+                              r.CurrentStoreID == StoreID &&
+                              r.Type == Type &&
+                              r.Active == true &&
+                              r.ProductID == ProductID);
+
+            if (record == null)
+            {
+                return NotFound();
+            }
+
+            record.Active = false;
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Traslado declinado correctamente";
+            return RedirectToAction(nameof(ProductNotification));
+
+        }
+    }
+}

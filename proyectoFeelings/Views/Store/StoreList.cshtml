@@ -1,0 +1,98 @@
+﻿@model List<proyectoFeelings.Models.Store>
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/3.0.2/css/dataTables.dataTables.css" />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+<table class="table" id="storesTable">
+    <thead>
+        <tr>
+            <th>Tienda</th>
+            <th>Ubicacion</th>
+            <th>Numero</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var store in Model)
+        {
+            <tr>
+                
+                <td>@(store.StoreName)</td>
+                <td>@(store.Location)</td>
+                <td>@(store.PhoneNumber)</td>
+                <td>@(store.Status ? "Activo" : "Inactivo")</td>
+                <td>
+                    <a asp-controller="Store"
+                       asp-action="EditStore"
+                       asp-route-storeId="@(store.StoreID)"
+                       class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+
+                </td>
+
+
+            </tr>
+        }
+    </tbody>
+</table>
+<script src="https://cdn.datatables.net/3.0.2/js/dataTables.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    new DataTable('#storesTable', {
+
+    pageLength: 10,
+
+    lengthMenu: [5, 10, 25, 50, 100],
+
+    order: [[0, 'asc']],
+
+    language: {
+    search: "Buscar:",
+    info: "",
+    infoEmpty: "No hay tiendas",
+    zeroRecords: "No se encontraron resultados",
+    lengthMenu: "",
+
+    paginate: {
+    first: "Primero",
+    last: "Último",
+    next: "Siguiente",
+    previous: "Anterior"
+    }
+    },
+
+    columnDefs: [
+    {
+    orderable: false,
+    targets: 4
+    }
+    ]
+
+    });
+
+    });
+</script>

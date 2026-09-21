@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using proyectoFeelings.Models;
-using System.Diagnostics;
+
 
 namespace proyectoFeelings.Controllers
 {
@@ -14,7 +13,7 @@ namespace proyectoFeelings.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize] // solo los usuarios autenticados pueden acceder a esta acción
         public IActionResult Privacy()
         {
             return View();
@@ -33,10 +32,6 @@ namespace proyectoFeelings.Controllers
         }
 
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+
     }
 }

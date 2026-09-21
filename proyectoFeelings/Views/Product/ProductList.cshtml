@@ -1,0 +1,106 @@
+﻿@model List<proyectoFeelings.ViewModels.ProductViewModel>
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/3.0.2/css/dataTables.dataTables.css" />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+<table class="table" id="productsTable">
+    <thead>
+        <tr>
+            <th>Tienda</th>
+            <th>Codigo</th>
+            <th>Descripcion</th>
+            <th>Categoria</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Proveedor</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@(product.StoreName)</td>
+                <td>@(product.Code)</td>
+                <td>@(product.Description)</td>
+                <td>@(product.Category)</td>
+                <td>@(product.Quantity)</td>
+                <td>@(product.Price)</td>
+                <td>@(product.Provider)</td>
+                <td>@(product.Status ? "Activo" : "Inactivo")</td>
+                <td>
+                    <a asp-controller="Product"
+                       asp-action="EditProduct"
+                       asp-route-productId="@(product.ProductID)"
+                       asp-route-storeId="@(product.StoreID)"
+                       class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+
+                </td>
+
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://cdn.datatables.net/3.0.2/js/dataTables.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    new DataTable('#productsTable', {
+
+    pageLength: 10,
+
+
+    order: [[1, 'asc']],
+
+    language: {
+    search: "Buscar:",
+    info: "",
+    infoEmpty: "No hay productos",
+    zeroRecords: "No se encontraron resultados",
+    lengthMenu: "",
+
+    paginate: {
+    first: "Primero",
+    last: "Último",
+    next: "Siguiente",
+    previous: "Anterior"
+    }
+    },
+
+    columnDefs: [
+    {
+    orderable: false,
+    targets: 8
+    }
+    ]
+
+    });
+
+    });
+</script>

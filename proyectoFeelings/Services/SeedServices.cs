@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;       
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
+using proyectoFeelings.ViewModels;
+using System.Net.NetworkInformation;
 
 namespace proyectoFeelings.Services
 {
@@ -31,7 +33,7 @@ namespace proyectoFeelings.Services
 
                 logger.LogInformation("Verificando tiendas...");
 
-                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 11) == null)
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreName == "Multicentro") == null)
                 {                                                                           //anadir store
 
                     var Store1 = new Store
@@ -44,7 +46,7 @@ namespace proyectoFeelings.Services
                     context.Store.Add(Store1);
                     await context.SaveChangesAsync();
                 }
-                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2025) == null)
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreName == "Terramall") == null)
                 {
                     var Store2 = new Store
                     {
@@ -60,7 +62,7 @@ namespace proyectoFeelings.Services
                 }
 
 
-                if (await context.Store.FirstOrDefaultAsync(s => s.StoreID == 2026) == null)
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreName == "San Sebastian") == null)
                 {
                     var Store3 = new Store
                     {
@@ -73,7 +75,20 @@ namespace proyectoFeelings.Services
                     await context.SaveChangesAsync();
 
                 }
-                
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreName == "Administracion") == null)
+                {
+                    var Store4 = new Store
+                    {
+                        StoreName = "Administracion",
+                        PhoneNumber = "2211-1050",
+                        Location = "San Jose",
+                        Status = true
+                    };
+                    context.Store.Add(Store4);
+                    await context.SaveChangesAsync();
+
+                }
+
 
 
                 //anadir usuario admin
@@ -140,7 +155,70 @@ namespace proyectoFeelings.Services
                 }
                 var Store = await context.Store.FirstOrDefaultAsync();
                 logger.LogInformation("Verificando stores...");
-                logger.LogInformation(Store.StoreID.ToString()); 
+                logger.LogInformation(Store.StoreID.ToString());
+
+                //anadir notificaciones
+           /*     bool hasType1 = await context.Record.AnyAsync(r => r.Type == 1 && r.Active == true);
+                bool hasType2 = await context.Record.AnyAsync(r => r.Type == 2 && r.Active == true);
+
+                if (!hasType1)
+                {
+
+
+
+                    var Notification1 = new Record
+                    {
+
+                        ProductID = 12,
+                        CurrentStoreID = 8,
+                        Quantity = 5,
+                        Active = true,
+                        DateTime = DateTime.Now,
+                        //   Description = "Producto 1",
+                        //   Code = 1,
+                        Comment = "Comentario 1",
+                        Type = 1,
+                        NewStoreID = 7,
+
+
+                    };
+
+                    context.Record.Add(Notification1);
+                    await context.SaveChangesAsync();
+
+                }
+                if (!hasType2)
+                    {
+                        
+
+
+
+                    
+                    var Notification2 = new Record
+                    {
+
+                        ProductID = 12,
+                        CurrentStoreID = 8,
+                        Quantity = 5,
+                        Active = true,
+                        DateTime = DateTime.Now,
+                        //   Description = "Producto 1",
+                        //   Code = 1,
+                        Comment = "Comentario 1",
+                        Type = 2,
+                        //  Provider = "Proveedor 1",
+
+
+
+                    };
+
+                    context.Record.Add(Notification2);
+
+                    await context.SaveChangesAsync();
+
+                }
+           */
+
             }
             catch (Exception ex)
             {

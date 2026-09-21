@@ -32,8 +32,11 @@ body {
 #sidebar {
     width: 250px;
     min-height: 100vh;
-    background: linear-gradient( 180deg, #0a2a66, #4d0057 );
+    background: linear-gradient( 120deg, #001ac3, #d5ce00 );
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
 .sidebar-header {
@@ -44,6 +47,9 @@ body {
 }
 
 .sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -62,4 +68,10 @@ body {
 
 .sidebar-hidden {
     margin-left: -250px;
+}
+
+.logout-item {
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
 }

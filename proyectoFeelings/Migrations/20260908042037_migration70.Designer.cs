@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using proyectoFeelings.Data;
 
@@ -11,9 +12,11 @@ using proyectoFeelings.Data;
 namespace proyectoFeelings.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260908042037_migration70")]
+    partial class migration70
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,13 +259,14 @@ namespace proyectoFeelings.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Category")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CurrentPrice")
+                    b.Property<int>("CurrentPrice")
                         .HasColumnType("int");
 
                     b.Property<int>("CurrentStoreID")
@@ -272,6 +276,7 @@ namespace proyectoFeelings.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NewCategory")
@@ -295,22 +300,25 @@ namespace proyectoFeelings.Migrations
                     b.Property<int?>("NewStoreID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProductID")
+                    b.Property<int>("ProductID")
                         .HasColumnType("int");
 
                     b.Property<string>("Provider")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("Status")
+                    b.Property<bool>("Status")
                         .HasColumnType("bit");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("RecordId");
+
+                    b.HasIndex("CurrentStoreID");
 
                     b.HasIndex("ProductID");
 
@@ -526,11 +534,21 @@ namespace proyectoFeelings.Migrations
 
             modelBuilder.Entity("proyectoFeelings.Models.Record", b =>
                 {
+                    b.HasOne("proyectoFeelings.Models.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("CurrentStoreID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("proyectoFeelings.Models.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductID");
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("Store");
                 });
 
             modelBuilder.Entity("proyectoFeelings.Models.StoreProduct", b =>

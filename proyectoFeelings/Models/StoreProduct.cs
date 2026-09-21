@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace proyectoFeelings.Models
 {
-    [PrimaryKey(nameof(StoreID), nameof(ProductID))]
+    [PrimaryKey(nameof(ProductID), nameof(StoreID))] // storeid y productid son la clave primaria compuesta
     public class StoreProduct
 
     {
@@ -17,5 +17,7 @@ namespace proyectoFeelings.Models
 
         public Store Store { get; set; }
         public Product Product { get; set; }
+
+
     }
 }

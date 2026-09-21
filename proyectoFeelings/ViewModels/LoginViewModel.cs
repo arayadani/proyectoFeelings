@@ -16,8 +16,6 @@ namespace proyectoFeelings.ViewModels
         public string Password { get; set; } //esto es parte del modelo
 
 
-        [Display(Name = "Recordar contraseña")] 
 
-        public bool RememberMe { get; set; } //no necesario
     }
 }
