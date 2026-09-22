@@ -33,11 +33,24 @@ namespace proyectoFeelings.Controllers
         {
             var currentUser = await userManager.GetUserAsync(User);
             var storeId = (currentUser)?.StoreID;
+            if (storeId == null)
+            {
+                return NotFound();
+            }
+            var store = await _context.Store.FindAsync(storeId);
+
+            if (store == null)
+            {
+                return NotFound();
+
+            }
+
+           
             var model = new ProductViewModel
             {
                 User = currentUser,
-                StoreID = storeId ?? 0 // Assuming StoreID is an int, provide a default value if null/
-
+                StoreID = storeId ?? 0, // Assuming StoreID is an int, provide a default value if null/
+                StoreName = store.StoreName,
                 // Add any other properties your ViewModel contains
             };
             //  return View(currentUser);
@@ -226,7 +239,7 @@ namespace proyectoFeelings.Controllers
                 ProductID = (int)model.ProductID,
                 CurrentStoreID = model.StoreID,
                 Type = 3,
-                Quantity = storeProduct.Quantity,
+                Quantity = Quantity,
                 DateTime = DateTime.Now,
                 Active = false,
                 Comment = model.Comment,

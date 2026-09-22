@@ -51,6 +51,19 @@ namespace proyectoFeelings.Controllers
             };
             _context.Store.Add(store);
             await _context.SaveChangesAsync();
+            var record2 = new Record
+            {
+                StoreName = model.StoreName,
+                StoreLocation = model.Location,
+                StorePhoneNumber = model.PhoneNumber,
+                Status = model.Status,
+                DateTime = DateTime.Now,
+                Active = false,
+                Type = 5,
+                Comment = $"Se creo la tienda {model.StoreName}"
+            };
+            _context.Record.Add(record2);
+            await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Tienda creada correctamente";
             return RedirectToAction(nameof(StoreList));
         }
@@ -116,6 +129,11 @@ namespace proyectoFeelings.Controllers
 
         {
             var store = await _context.Store.FindAsync(model.StoreID);
+            var StoreName = store.StoreName;
+            var StoreLocation = store.Location;
+            var StorePhoneNumber = store.PhoneNumber;
+            var StoreStatus = store.Status;
+
 
             if (store == null)
             {
@@ -128,6 +146,25 @@ namespace proyectoFeelings.Controllers
             store.Status = model.Status;
 
             // Update the storeProduct properties
+
+            await _context.SaveChangesAsync();
+            var record2 = new Record
+            {
+                StoreName = StoreName,
+                NewStoreName = model.StoreName,
+                StoreLocation = StoreLocation,
+                NewStoreLocation = model.Location,
+                StorePhoneNumber = StorePhoneNumber,
+                NewStorePhoneNumber = model.PhoneNumber,
+                Status = StoreStatus,
+                CurrentStoreID = store.StoreID,
+                NewStatus = model.Status,
+                DateTime = DateTime.Now,
+                Active = false,
+                Type = 5,
+                Comment = $"Se editó la tienda {model.StoreName}"
+            };
+            _context.Record.Add(record2);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Tienda actualizada correctamente";
             return RedirectToAction(nameof(StoreList));

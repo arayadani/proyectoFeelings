@@ -10,14 +10,13 @@
 
     <input asp-for="StoreID" type="hidden" />
     <div asp-validation-summary="All" class="text-danger"></div>
+
     <div class="mb-3">
-        <label>Tienda</label>
-        <input class="form-control" readonly
-               value="@(Model.StoreID == 1 ? "Multicentro" :
-                        Model.StoreID == 2 ? "Terramall" :
-                        Model.StoreID == 3 ? "San Sebastian" :
-                        "Unknown Store")" />
+        <label asp-for="StoreName" class="form-label">Nombre de la tienda</label>
+        <input asp-for="StoreName" class="form-control" readonly />
+        <span asp-validation-for="StoreName" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label asp-for="Code" class="form-label">Codigo del producto</label>
         <input asp-for="Code" class="form-control" />
