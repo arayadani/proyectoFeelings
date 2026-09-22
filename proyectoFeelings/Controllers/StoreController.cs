@@ -24,6 +24,8 @@ namespace proyectoFeelings.Controllers
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
+
+
         }
         public IActionResult Index()
         {
