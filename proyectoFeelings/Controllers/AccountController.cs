@@ -193,6 +193,7 @@ namespace proyectoFeelings.Controllers
                     }
                     await userManager.AddToRoleAsync(user, "User");
                 }
+                var currentUser = await userManager.GetUserAsync(User);
                 var record2 = new Record
                 {
                     FullName = OldFullName,
@@ -202,12 +203,14 @@ namespace proyectoFeelings.Controllers
                     AdminAccess = OldAdminAccess,
                     NewAdminAccess = model.AdminAccess,
                     UserStoreId = OldStoreId,
+                    CurrentStoreID = (int)OldStoreId,
                     NewUserStoreId = model.StoreId,
                     UserPhoneNumber = OldUserPhoneNumber,
                     NewUserPhoneNumber = model.PhoneNumber,
                     Status = OldStatus,
                     NewStatus = model.Status,
                     DateTime = DateTime.Now,
+                    Author = currentUser.FullName,
                     Active = false,
                     Type = 4,
                     Comment = $"Se editó el usuario {model.Email}"
@@ -272,16 +275,20 @@ namespace proyectoFeelings.Controllers
                     {
                         await userManager.AddToRoleAsync(user, "User");
                     }
+                    var currentUser = await userManager.GetUserAsync(User);
+
                     var record2 = new Record
                     {
                         FullName = model.Email,
                         Email = model.Email,
                         AdminAccess = model.AdminAccess,
                         UserStoreId = model.StoreId,
+                        CurrentStoreID = model.StoreId,
                         UserPhoneNumber = model.PhoneNumber,
                         Status = model.Status,
                         DateTime = DateTime.Now,
                         Active = false,
+                        Author = currentUser.FullName,
                         Type = 4,
                         Comment = $"Se creo el usuario {model.Email}"
                     };
@@ -335,6 +342,23 @@ namespace proyectoFeelings.Controllers
 
             if (result.Succeeded)
             {
+                var currentUser = await userManager.GetUserAsync(User);
+
+                var record2 = new Record
+                {
+                    FullName = model.Email,
+                    Email = model.Email,
+                    UserStoreId = (int)user.StoreID,
+                    CurrentStoreID = (int)user.StoreID,
+                    Status = false,
+                    DateTime = DateTime.Now,
+                    Active = false,
+                    Author = currentUser.FullName,
+                    Type = 4,
+                    Comment = $"Se cambio la contraseña de {model.Email}"
+                };
+                _context.Record.Add(record2);
+                await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Contraseña editada correctamente";
                 return RedirectToAction(nameof(UserList));
             }
@@ -368,5 +392,6 @@ namespace proyectoFeelings.Controllers
 
     }
 }
+
 
 

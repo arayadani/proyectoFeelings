@@ -53,6 +53,8 @@ namespace proyectoFeelings.Controllers
             };
             _context.Store.Add(store);
             await _context.SaveChangesAsync();
+            var currentStore = await _context.Store.FirstOrDefaultAsync(s => s.StoreName == model.StoreName && s.Location == model.Location);
+            var currentUser = await userManager.GetUserAsync(User);
             var record2 = new Record
             {
                 StoreName = model.StoreName,
@@ -62,6 +64,8 @@ namespace proyectoFeelings.Controllers
                 DateTime = DateTime.Now,
                 Active = false,
                 Type = 5,
+                CurrentStoreID = currentStore.StoreID,
+                Author = currentUser.FullName,
                 Comment = $"Se creo la tienda {model.StoreName}"
             };
             _context.Record.Add(record2);
@@ -150,6 +154,7 @@ namespace proyectoFeelings.Controllers
             // Update the storeProduct properties
 
             await _context.SaveChangesAsync();
+            var currentUser = await userManager.GetUserAsync(User);
             var record2 = new Record
             {
                 StoreName = StoreName,
@@ -163,6 +168,7 @@ namespace proyectoFeelings.Controllers
                 NewStatus = model.Status,
                 DateTime = DateTime.Now,
                 Active = false,
+                Author = currentUser.FullName,
                 Type = 5,
                 Comment = $"Se editó la tienda {model.StoreName}"
             };

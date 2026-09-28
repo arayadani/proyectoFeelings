@@ -112,6 +112,21 @@ namespace proyectoFeelings.Controllers
                 _context.StoreProduct.Add(StoreProduct);
                 await _context.SaveChangesAsync(); // Save the StoreProduct entity to the database
                 product.StoreProduct.Add(StoreProduct); // Add the StoreProduct to the Product's collection
+                var record = new Record
+                {
+                    Description = Product.Description,
+                    CurrentPrice = Convert.ToInt32(Product.Price),
+                    Provider = Product.Provider,
+                    Status = Product.Status,
+                    Category = Product.Category,
+                    Author = currentUser.FullName,
+                    ProductID = product.ProductID,
+                    Quantity = StoreProduct.Quantity,
+                    CurrentStoreID = (int)storeId,
+                    Comment = $"Se creo el producto: {product.Description}"
+
+                };
+                _context.Record.Add(record);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "Producto creado correctamente";
                 return RedirectToAction(nameof(ProductList));
@@ -191,6 +206,7 @@ namespace proyectoFeelings.Controllers
                 Category = product.Category,
                 Quantity = storeProduct.Quantity,
 
+
             };
 
             return View(model);
@@ -250,11 +266,12 @@ namespace proyectoFeelings.Controllers
                 NewProvider = Provider != model.Provider ? model.Provider : null,
                 NewStatus = Status != model.Status ? model.Status : null,
                 NewQuantity = Quantity != model.Quantity ? model.Quantity : null,
-                Description =Description,
+                Author = currentUser.FullName,
+                Description = Description,
                 Category = Category,
                 Provider = Provider,
                 Status = Status,
-                
+
             };
             _context.Record.Add(record);
             await _context.SaveChangesAsync();
@@ -416,7 +433,9 @@ namespace proyectoFeelings.Controllers
                 NewQuantity = (storeProduct.Quantity - model.Quantity),
                 DateTime = DateTime.Now,
                 Active = true,
-                Comment = model.Comment
+                Comment = model.Comment,
+                Author = currentUser.FullName,
+
             };
             _context.Record.Add(record);
             await _context.SaveChangesAsync();
@@ -477,6 +496,7 @@ namespace proyectoFeelings.Controllers
 
             record.Active = false; 
             await _context.SaveChangesAsync();
+            var currentUser = await userManager.GetUserAsync(User);
             var record1 = new Record
             {
                 ProductID = ProductID,
@@ -487,6 +507,7 @@ namespace proyectoFeelings.Controllers
                 NewQuantity = NewQuantity,
                 DateTime = DateTime.Now,
                 Active = false,
+                Author = currentUser.FullName,
                 Comment = $"Se rebajaron {Quantity-NewQuantity} productos"
             };
             _context.Record.Add(record1);
@@ -500,6 +521,7 @@ namespace proyectoFeelings.Controllers
                 NewQuantity = NewstoreProduct.Quantity,
                 DateTime = DateTime.Now,
                 Active = false,
+                Author = currentUser.FullName,
                 Comment = $"Se adicionaron {Quantity - NewQuantity} productos"
             };
             _context.Record.Add(record2);

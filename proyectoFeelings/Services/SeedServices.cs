@@ -75,11 +75,11 @@ namespace proyectoFeelings.Services
                     await context.SaveChangesAsync();
 
                 }
-                if (await context.Store.FirstOrDefaultAsync(s => s.StoreName == "Administracion") == null)
+                if (await context.Store.FirstOrDefaultAsync(s => s.StoreName == "Administración") == null)
                 {
                     var Store4 = new Store
                     {
-                        StoreName = "Administracion",
+                        StoreName = "Administración",
                         PhoneNumber = "2211-1050",
                         Location = "San Jose",
                         Status = true

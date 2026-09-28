@@ -71,7 +71,9 @@ namespace proyectoFeelings.Models
         public string? StoreLocation { get; set; }
         public string? NewStoreLocation { get; set; }
 
-     
+     ///
+
+        public string? Author { get; set; }
 
 
     }
