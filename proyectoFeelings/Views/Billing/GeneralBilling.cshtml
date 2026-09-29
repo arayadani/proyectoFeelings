@@ -1,1 +1,395 @@
-﻿
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturación</title>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Facturación</h1>
+
+        <!-- Datos del producto -->
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label>Product</label>
+                <input
+                    type="text"
+                    id="productInput"
+                    list="productList"
+                    autocomplete="off"
+                    placeholder="Search product..."
+                >
+            </div>
+            <datalist id="productList">
+            </datalist> 
+
+            <script>
+
+                const input = document.getElementById("productInput");
+                const list = document.getElementById("productList");
+
+                input.addEventListener("input", function () {
+
+                    const term = this.value;
+
+                    if (term.length < 1) {
+                        list.innerHTML = "";
+                        return;
+                    }
+
+                    fetch(`/Billing/SearchValues?term=${encodeURIComponent(term)}`)
+                        .then(response => response.json())
+                        .then(data => {
+
+                            list.innerHTML = "";
+
+                            data.forEach(item => {
+                                const option = document.createElement("option");
+                                option.value = item.text;
+                                list.appendChild(option);
+                            });
+                        });
+                });
+
+            </script>
+
+            <div class="form-group">
+                <label for="producto">Producto</label>
+                <input type="text" id="producto" name="producto" disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="cantidad">Cantidad</label>
+                <input type="number" id="cantidad" name="cantidad" min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="precio">Precio</label>
+                <input type="text" id="precio" name="precio" disabled>
+            </div>
+
+        </div>
+
+        <!-- Información de factura -->
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label for="fecha">Fecha</label>
+                <input type="date" id="fecha" name="fecha">
+            </div>
+
+      
+
+
+
+        </div>
+
+        <!-- Botón ingresar -->
+        <div class="button-container">
+            <button type="button" class="btn-ingresar" onclick="agregarProducto()">
+                INGRESAR
+            </button>
+        </div>
+
+        <!-- Detalle de factura -->
+        <h2>Detalle de factura</h2>
+
+        <table id="tablaProductos">
+
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- Los productos aparecerán aquí -->
+            </tbody>
+
+        </table>
+
+        <!-- Totales -->
+        <div class="totales">
+
+            <table>
+
+                <tr>
+                    <td><strong>SUBTOTAL</strong></td>
+                    <td id="subtotal">₡0.00</td>
+                </tr>
+
+                <!--      <tr>
+                    <td><strong>IVA</strong></td>
+                    <td id="iva">₡0.00</td>
+                </tr>
+                 -->
+                <tr>
+                    <td class="total-final"><strong>TOTAL</strong></td>
+                    <td class="total-final" id="total">₡0.00</td>
+                </tr>
+
+            </table>
+
+        </div>
+
+        <!-- Facturar -->
+        <div class="facturar-container">
+
+            <button type="button"
+                    class="btn-facturar"
+                    onclick="facturar()">
+                FACTURAR
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script>
+            
+            let productos = [];
+
+            function agregarProducto() {
+
+                const codigo = document.getElementById("codigo").value;
+                const producto = document.getElementById("producto").value;
+                const cantidad = parseInt(
+                    document.getElementById("cantidad").value
+                );
+                const precio = parseFloat(
+                    document.getElementById("precio").value
+                );
+
+                if (!codigo || !producto || !cantidad || !precio) {
+                    alert("Complete los datos del producto.");
+                    return;
+                }
+
+                const subtotal = cantidad * precio;
+
+                productos.push({
+                    codigo: codigo,
+                    producto: producto,
+                    cantidad: cantidad,
+                    precio: precio,
+                    subtotal: subtotal
+                });
+
+                actualizarTabla();
+                calcularTotales();
+
+                document.getElementById("codigo").value = "";
+                document.getElementById("producto").value = "";
+                document.getElementById("cantidad").value = "";
+                document.getElementById("precio").value = "";
+            }
+
+
+            function actualizarTabla() {
+
+                const tbody = document.querySelector(
+                    "#tablaProductos tbody"
+                );
+
+                tbody.innerHTML = "";
+
+                productos.forEach(function (producto) {
+
+                    const fila = document.createElement("tr");
+
+                    fila.innerHTML = `
+                        <td>${producto.codigo}</td>
+                        <td>${producto.producto}</td>
+                        <td>${producto.cantidad}</td>
+                        <td>₡${producto.precio.toFixed(2)}</td>
+                        <td>₡${producto.subtotal.toFixed(2)}</td>
+                    `;
+
+                    tbody.appendChild(fila);
+                });
+            }
+
+
+            function calcularTotales() {
+
+                let subtotal = 0;
+
+                productos.forEach(function (producto) {
+                    subtotal += producto.subtotal;
+                });
+
+                const iva = subtotal * 0.13;
+                const total = subtotal + iva;
+
+                document.getElementById("subtotal").innerText =
+                    "₡" + subtotal.toFixed(2);
+
+                document.getElementById("iva").innerText =
+                    "₡" + iva.toFixed(2);
+
+                document.getElementById("total").innerText =
+                    "₡" + total.toFixed(2);
+            }
+
+
+            function facturar() {
+
+                if (productos.length === 0) {
+                    alert("No hay productos en la factura.");
+                    return;
+                }
+
+                const cliente =
+                    document.getElementById("cliente").value;
+
+                if (!cliente) {
+                    alert("Ingrese el cliente.");
+                    return;
+                }
+
+                alert("Factura generada correctamente.");
+
+                console.log({
+                    cliente: cliente,
+                    fecha: document.getElementById("fecha").value,
+                    numeroFactura:
+                        document.getElementById("numeroFactura").value,
+                    productos: productos
+                });
+            }
+
+    </script>
+
+</body>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        margin-bottom: 30px;
+        color: #333;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #444;
+    }
+
+    input {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+        input:disabled {
+            background-color: #eee;
+        }
+
+    .button-container {
+        margin: 20px 0;
+    }
+
+    button {
+        padding: 11px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn-ingresar {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .btn-facturar {
+        background-color: #27ae60;
+        color: white;
+    }
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th {
+        background-color: #343a40;
+        color: white;
+        padding: 12px;
+        text-align: left;
+    }
+
+    td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .totales {
+        margin-top: 25px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+        .totales table {
+            width: 400px;
+        }
+
+        .totales td {
+            font-size: 17px;
+        }
+
+    .total-final {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .facturar-container {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+</style>
+</html>
