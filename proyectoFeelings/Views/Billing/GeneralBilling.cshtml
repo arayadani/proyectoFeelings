@@ -17,51 +17,21 @@
 
             <div class="form-group">
 
-                <label>Product</label>
+                <label>Producto</label>
                 <input
                     type="text"
                     id="productInput"
                     list="productList"
                     autocomplete="off"
-                    placeholder="Search product..."
+                    placeholder="Buscar código..."
                 >
             </div>
             <datalist id="productList">
             </datalist> 
 
-            <script>
-
-                const input = document.getElementById("productInput");
-                const list = document.getElementById("productList");
-
-                input.addEventListener("input", function () {
-
-                    const term = this.value;
-
-                    if (term.length < 1) {
-                        list.innerHTML = "";
-                        return;
-                    }
-
-                    fetch(`/Billing/SearchValues?term=${encodeURIComponent(term)}`)
-                        .then(response => response.json())
-                        .then(data => {
-
-                            list.innerHTML = "";
-
-                            data.forEach(item => {
-                                const option = document.createElement("option");
-                                option.value = item.text;
-                                list.appendChild(option);
-                            });
-                        });
-                });
-
-            </script>
-
             <div class="form-group">
-                <label for="producto">Producto</label>
-                <input type="text" id="producto" name="producto" disabled>
+                <label for="producto">Descripción</label>
+                <input type="text" id="producto" name="producto" disabled > 
             </div>
 
             <div class="form-group">
@@ -81,7 +51,7 @@
 
             <div class="form-group">
                 <label for="fecha">Fecha</label>
-                <input type="date" id="fecha" name="fecha">
+                <input type="date" id="fecha" name="fecha" disabled >
             </div>
 
       
@@ -124,19 +94,10 @@
             <table>
 
                 <tr>
-                    <td><strong>SUBTOTAL</strong></td>
+                    <td><strong>Total</strong></td>
                     <td id="subtotal">₡0.00</td>
                 </tr>
 
-                <!--      <tr>
-                    <td><strong>IVA</strong></td>
-                    <td id="iva">₡0.00</td>
-                </tr>
-                 -->
-                <tr>
-                    <td class="total-final"><strong>TOTAL</strong></td>
-                    <td class="total-final" id="total">₡0.00</td>
-                </tr>
 
             </table>
 
@@ -157,44 +118,129 @@
 
 
     <script>
-            
+
+            const fechaInput = document.getElementById("fecha");
+
+            const hoy = new Date();
+
+            const year = hoy.getFullYear();
+            const month = String(hoy.getMonth() + 1).padStart(2, "0");
+            const day = String(hoy.getDate()).padStart(2, "0");
+
+            fechaInput.value = `${year}-${month}-${day}`;
+
             let productos = [];
 
-            function agregarProducto() {
+            // ==========================
+            // BUSCAR PRODUCTOS
+            // ==========================
 
-                const codigo = document.getElementById("codigo").value;
-                const producto = document.getElementById("producto").value;
-                const cantidad = parseInt(
-                    document.getElementById("cantidad").value
-                );
-                const precio = parseFloat(
-                    document.getElementById("precio").value
-                );
+            const input = document.getElementById("productInput");
+            const list = document.getElementById("productList");
+            const productoInput = document.getElementById("producto");
+            const precioInput = document.getElementById("precio");
 
-                if (!codigo || !producto || !cantidad || !precio) {
-                    alert("Complete los datos del producto.");
+            input.addEventListener("input", function () {
+
+                const term = this.value;
+
+                if (term.length < 1) {
+                    list.innerHTML = "";
                     return;
                 }
 
+                fetch(`/Billing/SearchValues?term=${encodeURIComponent(term)}`)
+                    .then(response => response.json())
+                    .then(data => {
+
+                        list.innerHTML = "";
+
+                        data.forEach(item => {
+
+                            const option = document.createElement("option");
+
+                            option.value = item.code;
+
+                            list.appendChild(option);
+                        });
+                         // Modify productoInput
+                           productoInput.value = data[0].description;
+                           // Modify precioInput
+                            precioInput.value = data[0].price;
+                    });
+            });
+
+
+
+        
+            // ==========================
+            // AGREGAR PRODUCTO
+            // ==========================
+
+            function agregarProducto() {
+
+                const codigo = document.getElementById("productInput").value;
+
+                const producto = productoInput.value;
+
+                const cantidad = parseInt(
+                    document.getElementById("cantidad").value
+                );
+
+                const precio = parseFloat(
+                    precioInput.value
+                );
+
+
+                if (!codigo || !producto || !cantidad || !precio) {
+
+                    alert("Complete los datos del producto.");
+
+                    return;
+                }
+
+
                 const subtotal = cantidad * precio;
 
+
                 productos.push({
+
                     codigo: codigo,
+
                     producto: producto,
+
                     cantidad: cantidad,
+
                     precio: precio,
+
                     subtotal: subtotal
+
                 });
 
+
                 actualizarTabla();
+
                 calcularTotales();
 
-                document.getElementById("codigo").value = "";
-                document.getElementById("producto").value = "";
-                document.getElementById("cantidad").value = "";
-                document.getElementById("precio").value = "";
-            }
 
+                // Limpiar campos
+
+                input.value = "";
+
+                productoInput.value = "";
+
+                document.getElementById("cantidad").value = "";
+
+                precioInput.value = "";
+
+                list.innerHTML = "";
+
+            }
+        
+
+            // ==========================
+            // ACTUALIZAR TABLA
+            // ==========================
 
             function actualizarTabla() {
 
@@ -204,69 +250,96 @@
 
                 tbody.innerHTML = "";
 
+
                 productos.forEach(function (producto) {
 
                     const fila = document.createElement("tr");
 
+
                     fila.innerHTML = `
+
                         <td>${producto.codigo}</td>
+
                         <td>${producto.producto}</td>
+
                         <td>${producto.cantidad}</td>
+
                         <td>₡${producto.precio.toFixed(2)}</td>
+
                         <td>₡${producto.subtotal.toFixed(2)}</td>
+
                     `;
 
+
                     tbody.appendChild(fila);
+
                 });
+
             }
 
+
+            // ==========================
+            // CALCULAR TOTALES
+            // ==========================
 
             function calcularTotales() {
 
                 let subtotal = 0;
 
+
                 productos.forEach(function (producto) {
+
                     subtotal += producto.subtotal;
+
                 });
 
-                const iva = subtotal * 0.13;
-                const total = subtotal + iva;
+
+                
+
+         
+
 
                 document.getElementById("subtotal").innerText =
                     "₡" + subtotal.toFixed(2);
 
-                document.getElementById("iva").innerText =
-                    "₡" + iva.toFixed(2);
 
-                document.getElementById("total").innerText =
-                    "₡" + total.toFixed(2);
+
+
+
             }
 
+
+            // ==========================
+            // FACTURAR
+            // ==========================
 
             function facturar() {
 
                 if (productos.length === 0) {
+
                     alert("No hay productos en la factura.");
+
                     return;
                 }
 
-                const cliente =
-                    document.getElementById("cliente").value;
 
-                if (!cliente) {
-                    alert("Ingrese el cliente.");
-                    return;
-                }
+               
 
                 alert("Factura generada correctamente.");
 
+
                 console.log({
-                    cliente: cliente,
-                    fecha: document.getElementById("fecha").value,
+
+                    fecha:
+                        document.getElementById("fecha").value,
+
                     numeroFactura:
                         document.getElementById("numeroFactura").value,
+
                     productos: productos
+
                 });
+                
             }
 
     </script>

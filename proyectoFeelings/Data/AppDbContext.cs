@@ -18,6 +18,7 @@ namespace proyectoFeelings.Data
         public DbSet<Invoice> Invoice { get; set; }
         public DbSet<StoreProduct> StoreProduct { get; set; }
 
+        public DbSet<InvoiceDetail> InvoiceDetail { get; set; }
 
 
     }
