@@ -71,7 +71,16 @@ namespace proyectoFeelings.Models
         public string? StoreLocation { get; set; }
         public string? NewStoreLocation { get; set; }
 
-     ///
+
+
+        //INVOICE
+
+        public int? InvoiceId { get; set; }
+
+        public int? Total { get; set; }
+
+
+        ///
 
         public string? Author { get; set; }
 

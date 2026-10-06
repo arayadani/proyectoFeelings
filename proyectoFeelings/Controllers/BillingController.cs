@@ -72,5 +72,56 @@ namespace proyectoFeelings.Controllers
 
             return Json(result);
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> InvoiceCreationAsync([FromBody] int total)
+        {
+            // Console.WriteLine("HOLI MUNDO");
+
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+            if (storeId == null)
+            {
+                return NotFound();
+            }
+
+
+            Console.WriteLine("total3:" + total);
+
+            var invoice = new Invoice
+            {
+                StoreID = (int)storeId,
+                Datetime = DateTime.Now,
+                Total = total,
+            };
+
+            _context.Invoice.Add(invoice);
+            await _context.SaveChangesAsync();
+            var Invoice = await _context.Invoice
+           .FirstOrDefaultAsync();
+
+            var record = new Record
+            {
+                CurrentStoreID = (int)storeId,
+                Type = 6,
+                Total = total,
+                InvoiceId = Invoice.InvoiceId,
+                DateTime = DateTime.Now,
+                Active = false,
+                Author = currentUser.FullName,
+                Comment = $"Se genero una factura."
+            };
+            _context.Record.Add(record);
+            await _context.SaveChangesAsync();
+       //     TempData["SuccessMessage"] = "Trasladado solicitado correctamente";
+            //   return RedirectToAction(nameof(GeneralBilling));
+            return Json(new
+            {
+                success = true,
+                message = "Factura generada correctamente desde el controller."
+            });
+
+        }
     }
+
 }

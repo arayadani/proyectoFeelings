@@ -294,17 +294,8 @@
                 });
 
 
-                
-
-         
-
-
                 document.getElementById("subtotal").innerText =
                     "₡" + subtotal.toFixed(2);
-
-
-
-
 
             }
 
@@ -313,35 +304,59 @@
             // FACTURAR
             // ==========================
 
-            function facturar() {
+                                      function facturar() {
 
                 if (productos.length === 0) {
-
                     alert("No hay productos en la factura.");
-
                     return;
                 }
 
+                const token = document.querySelector(
+                    'input[name="__RequestVerificationToken"]'
+                ).value;
 
-               
+                const total = parseFloat(
+                    document.getElementById("subtotal")
+                        .textContent
+                        .replace("₡", "")
+                        .replace(/,/g, "")
+                        .trim()
+                );
 
-                alert("Factura generada correctamente.");
-
-
-                console.log({
-
-                    fecha:
-                        document.getElementById("fecha").value,
-
-                    numeroFactura:
-                        document.getElementById("numeroFactura").value,
-
-                    productos: productos
-
-                });
+                console.log("Total3:", total);
                 
-            }
+                fetch('/Billing/InvoiceCreation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(total)
+                })
+                .then(response => {
 
+                    if (!response.ok) {
+                        throw new Error("Error al generar la factura");
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+
+                    console.log(data);
+
+                    if (data.success) {
+                        alert("Factura generada correctamente.");
+                    } else {
+                        alert(data.message || "No se pudo generar la factura.");
+                    }
+
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Ocurrió un error al generar la factura.");
+                });
+            }
     </script>
 
 </body>
