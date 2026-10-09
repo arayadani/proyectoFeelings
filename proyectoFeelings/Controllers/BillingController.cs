@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
+using System.Text.Json;
 
 namespace proyectoFeelings.Controllers
 {
@@ -74,9 +75,13 @@ namespace proyectoFeelings.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> InvoiceCreationAsync([FromBody] int total)
+        public async Task<IActionResult> InvoiceCreationAsync([FromBody] JsonDocument request)
         {
-            // Console.WriteLine("HOLI MUNDO");
+            var root = request.RootElement;
+
+            int total = root.GetProperty("total").GetInt32();
+
+            var productos = root.GetProperty("productos");
 
             var currentUser = await userManager.GetUserAsync(User);
             var storeId = (currentUser)?.StoreID;
@@ -85,8 +90,7 @@ namespace proyectoFeelings.Controllers
                 return NotFound();
             }
 
-
-            Console.WriteLine("total3:" + total);
+            //Console.WriteLine("total3:" + total);
 
             var invoice = new Invoice
             {
@@ -97,8 +101,59 @@ namespace proyectoFeelings.Controllers
 
             _context.Invoice.Add(invoice);
             await _context.SaveChangesAsync();
+
             var Invoice = await _context.Invoice
-           .FirstOrDefaultAsync();
+                .OrderByDescending(i => i.Datetime)
+                .FirstOrDefaultAsync();
+
+
+            foreach (var item in productos.EnumerateArray())
+            {
+                string codigo = item.GetProperty("codigo").ToString();
+                string producto = item.GetProperty("producto").GetString() ?? "";
+
+                int cantidad = item.GetProperty("cantidad").GetInt32();
+
+                int precio = item.GetProperty("precio").GetInt32();
+                int subtotal = item.GetProperty("subtotal").GetInt32();
+
+                var product = await _context.Product.FirstOrDefaultAsync(p => p.Code.ToString() == codigo && p.Description == producto);
+
+                var invoiceDetail = new InvoiceDetail
+                {
+                    InvoiceId = Invoice.InvoiceId,
+                    ProductID = product.ProductID,
+                    Quantity = cantidad,
+                    Price = precio,
+                    Subtotal = subtotal,
+                    Invoice = Invoice,
+                    Product = product,
+                };
+
+                _context.InvoiceDetail.Add(invoiceDetail);
+                await _context.SaveChangesAsync();
+
+                var record2 = new Record
+                {
+                    ProductID = invoiceDetail.ProductID,
+                    CurrentStoreID = (int)storeId,
+                    Type = 6,
+                    Total = subtotal,
+                    InvoiceId = invoice.InvoiceId,
+                    DateTime = DateTime.Now,
+                    Active = false,
+                    Author = currentUser.FullName,
+                    Quantity = cantidad,
+                    Comment = $"Rebajo por factura: {Invoice.InvoiceId}"
+                };
+                _context.Record.Add(record2);
+                await _context.SaveChangesAsync();
+
+
+                //logica de rebajo de products
+
+            }
+
 
             var record = new Record
             {

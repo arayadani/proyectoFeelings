@@ -331,7 +331,12 @@
                         'Content-Type': 'application/json',
                         'RequestVerificationToken': token
                     },
-                    body: JSON.stringify(total)
+                    body: JSON.stringify(
+                        {
+                            total: total,
+                            productos: productos
+                        }
+                    )
                 })
                 .then(response => {
 
