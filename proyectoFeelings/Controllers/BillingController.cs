@@ -37,25 +37,6 @@ namespace proyectoFeelings.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchValuesAsync(string term)
         {
-            /*  string[] values =
-               {
-           "Apple",
-           "Banana",
-           "Orange",
-           "Pineapple",
-           "Banana2",
-           "Orange3",
-           "Pineapple2"
-       };
-
-               var result = values
-                   .Where(x => x.Contains(term ?? "", StringComparison.OrdinalIgnoreCase))
-                   .Select(x => new
-                   {
-                       id = x,
-                       text = x
-                   })
-                   .ToList(); */
             var currentUser = await userManager.GetUserAsync(User);
             var storeId = (currentUser)?.StoreID;
             var result = await _context.StoreProduct
@@ -82,6 +63,8 @@ namespace proyectoFeelings.Controllers
             int total = root.GetProperty("total").GetInt32();
 
             var productos = root.GetProperty("productos");
+            
+            var metodoPago = root.GetProperty("metodoPago").GetString();
 
             var currentUser = await userManager.GetUserAsync(User);
             var storeId = (currentUser)?.StoreID;
@@ -92,11 +75,13 @@ namespace proyectoFeelings.Controllers
 
             //Console.WriteLine("total3:" + total);
 
+
             var invoice = new Invoice
             {
                 StoreID = (int)storeId,
                 Datetime = DateTime.Now,
                 Total = total,
+                PaymentMethod = metodoPago,
             };
 
             _context.Invoice.Add(invoice);
@@ -109,15 +94,40 @@ namespace proyectoFeelings.Controllers
 
             foreach (var item in productos.EnumerateArray())
             {
+
                 string codigo = item.GetProperty("codigo").ToString();
                 string producto = item.GetProperty("producto").GetString() ?? "";
-
                 int cantidad = item.GetProperty("cantidad").GetInt32();
+                var product = await _context.Product.FirstOrDefaultAsync(p => p.Code.ToString() == codigo && p.Description == producto);
+                var storeProduct = await _context.StoreProduct.FirstOrDefaultAsync(sp => sp.ProductID == product.ProductID && sp.StoreID == storeId);
+                if (storeProduct == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    if (storeProduct.Quantity < cantidad)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"No hay suficiente cantidad del producto { producto} en la tienda."
+                            
+                           
+                        });
+                    }
+                    else
+                    {
+                        storeProduct.Quantity -= cantidad;
+                        _context.StoreProduct.Update(storeProduct);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
 
                 int precio = item.GetProperty("precio").GetInt32();
                 int subtotal = item.GetProperty("subtotal").GetInt32();
 
-                var product = await _context.Product.FirstOrDefaultAsync(p => p.Code.ToString() == codigo && p.Description == producto);
 
                 var invoiceDetail = new InvoiceDetail
                 {
@@ -143,7 +153,9 @@ namespace proyectoFeelings.Controllers
                     DateTime = DateTime.Now,
                     Active = false,
                     Author = currentUser.FullName,
-                    Quantity = cantidad,
+                    Quantity = storeProduct.Quantity + cantidad,
+                    NewQuantity= storeProduct.Quantity,
+                    PaymentMethod = metodoPago  ,
                     Comment = $"Rebajo por factura: {Invoice.InvoiceId}"
                 };
                 _context.Record.Add(record2);
@@ -164,6 +176,7 @@ namespace proyectoFeelings.Controllers
                 DateTime = DateTime.Now,
                 Active = false,
                 Author = currentUser.FullName,
+                PaymentMethod = metodoPago,
                 Comment = $"Se genero una factura."
             };
             _context.Record.Add(record);

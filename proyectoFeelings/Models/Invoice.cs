@@ -13,6 +13,8 @@ namespace proyectoFeelings.Models
 
         public DateTime Datetime { get; set; }
 
+        public string? PaymentMethod { get; set; }
+
         public decimal Total { get; set; }
 
         // Navigation property

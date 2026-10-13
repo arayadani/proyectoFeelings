@@ -79,6 +79,7 @@ namespace proyectoFeelings.Models
 
         public int? Total { get; set; }
 
+        public string? PaymentMethod { get; set; }
 
         ///
 

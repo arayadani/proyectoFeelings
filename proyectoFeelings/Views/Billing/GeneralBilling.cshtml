@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <title>Facturación</title>
 </head>
 
@@ -54,7 +56,16 @@
                 <input type="date" id="fecha" name="fecha" disabled >
             </div>
 
-      
+            <div class="form-group">
+                <label for="metodoPago">Método de Pago</label>
+                <select id="metodoPago" name="metodoPago">
+                    <option value="efectivo">Efectivo</option>
+                    <option value="tarjeta">Tarjeta</option>
+                    <option value="sinpe">Sinpe movil</option>
+                    <option value="otro">Otro</option>
+
+                </select>
+            </div>
 
 
 
@@ -79,6 +90,8 @@
                     <th>Cantidad</th>
                     <th>Precio</th>
                     <th>Subtotal</th>
+                    <th>Eliminar</th>
+
                 </tr>
             </thead>
 
@@ -109,7 +122,7 @@
             <button type="button"
                     class="btn-facturar"
                     onclick="facturar()">
-                FACTURAR
+                Generar e imprimir factura
             </button>
 
         </div>
@@ -139,6 +152,8 @@
             const list = document.getElementById("productList");
             const productoInput = document.getElementById("producto");
             const precioInput = document.getElementById("precio");
+            const metodoPagoInput = document.getElementById("metodoPago");
+
 
             input.addEventListener("input", function () {
 
@@ -182,6 +197,7 @@
                 const codigo = document.getElementById("productInput").value;
 
                 const producto = productoInput.value;
+                const metodoPago = metodoPagoInput.value;
 
                 const cantidad = parseInt(
                     document.getElementById("cantidad").value
@@ -192,7 +208,7 @@
                 );
 
 
-                if (!codigo || !producto || !cantidad || !precio) {
+                if (!codigo || !producto || !cantidad || !precio || !metodoPago) {
 
                     alert("Complete los datos del producto.");
 
@@ -268,6 +284,15 @@
 
                         <td>₡${producto.subtotal.toFixed(2)}</td>
 
+                           <td>
+                            <button type="button"
+                                    class="btn-eliminar"
+                                    onclick="eliminarProducto(this)"
+                                    title="Eliminar producto">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+
                     `;
 
 
@@ -299,18 +324,225 @@
 
             }
 
+            //ELIMINAR PRODUCTO
+                function eliminarProducto(boton) {
+                const fila = boton.closest("tr");
+                const codigo = fila.cells[0].textContent.trim();
+
+                // Eliminar del array
+                const index = productos.findIndex(
+                    p => String(p.codigo) === codigo
+                );
+
+                if (index !== -1) {
+                    productos.splice(index, 1);
+                }
+
+                // Eliminar de la tabla
+                fila.remove();
+
+                // Recalcular el total
+                calcularTotales();
+            }
 
             // ==========================
             // FACTURAR
             // ==========================
 
-                                      function facturar() {
+                function facturar() {
 
                 if (productos.length === 0) {
                     alert("No hay productos en la factura.");
                     return;
                 }
 
+                             // Open the window directly from the button click
+            const ventana = window.open("", "_blank");
+
+            if (!ventana) {
+                alert("Permita las ventanas emergentes para poder generar la factura.");
+            }
+
+            // Format currency
+            const formatoMoneda = valor =>
+                Number(valor).toLocaleString("es-CR", {
+                    style: "currency",
+                    currency: "CRC",
+                    minimumFractionDigits: 2
+                });
+
+            // Prevent product descriptions from inserting HTML
+            const escaparHTML = valor =>
+                String(valor ?? "").replace(/[&<>"']/g, caracter => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                })[caracter]);
+
+            const fecha = new Date().toLocaleString("es-CR");
+            const numeroFactura = Date.now().toString();
+
+            // Calculate the total from the product list
+            const total2 = productos.reduce(
+                (suma, p) => suma + Number(p.subtotal || 0),
+                0
+            );
+
+            // Generate the product rows
+            const filas = productos.map(p => `
+                <tr>
+                    <td>${escaparHTML(p.codigo)}</td>
+                    <td>${escaparHTML(p.producto)}</td>
+                    <td class="numero">${Number(p.cantidad)}</td>
+                    <td class="numero">${formatoMoneda(p.precio)}</td>
+                    <td class="numero">${formatoMoneda(p.subtotal)}</td>
+                </tr>
+            `).join("");
+
+            const facturaHTML = `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Factura ${numeroFactura}</title>
+
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            color: #222;
+                            margin: 35px;
+                            font-size: 13px;
+                        }
+
+                        .encabezado {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                            border-bottom: 2px solid #333;
+                            padding-bottom: 15px;
+                            margin-bottom: 20px;
+                        }
+
+                        h1 {
+                            margin: 0 0 8px;
+                            font-size: 26px;
+                        }
+
+                        .datos {
+                            text-align: right;
+                            line-height: 1.8;
+                        }
+
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+
+                        th, td {
+                            border: 1px solid #ccc;
+                            padding: 10px 8px;
+                            text-align: left;
+                        }
+
+                        th {
+                            background: #f0f0f0;
+                        }
+
+                        .numero {
+                            text-align: right;
+                            white-space: nowrap;
+                        }
+
+                        .total {
+                            margin-top: 20px;
+                            text-align: right;
+                            font-size: 20px;
+                            font-weight: bold;
+                        }
+
+                        .acciones {
+                            margin-top: 30px;
+                            text-align: center;
+                        }
+
+                        button {
+                            padding: 10px 20px;
+                            margin: 5px;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            background: #198754;
+                            color: white;
+                            font-size: 14px;
+                        }
+
+                        .cerrar {
+                            background: #6c757d;
+                        }
+
+                        
+                    </style>
+                </head>
+
+                <body>
+                    <div class="encabezado">
+                        <div>
+                            <h1>FACTURA</h1>
+                            <p>Gracias por su compra.</p>
+                        </div>
+
+                        <div class="datos">
+                            <strong>Número:</strong> ${numeroFactura}<br>
+                            <strong>Fecha:</strong> ${escaparHTML(fecha)}
+                        </div>
+                    </div>
+
+                    <h3>Detalle de productos</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Descripción</th>
+                                <th class="numero">Cantidad</th>
+                                <th class="numero">Precio unitario</th>
+                                <th class="numero">Subtotal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            ${filas}
+                        </tbody>
+                    </table>
+
+                    <div class="total">
+                        Total: ${formatoMoneda(total2)}
+                    </div>
+
+                    <div class="acciones">
+                        <button onclick="window.print()">Imprimir factura</button>
+                        <button class="cerrar" onclick="window.close()">Cerrar</button>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            ventana.document.open();
+            ventana.document.write(facturaHTML);
+            ventana.document.close();
+
+            // Open the print dialog after the invoice has loaded
+            ventana.onload = function () {
+                ventana.focus();
+                ventana.print();
+            };
+
+
+            //esto manda el request al controller
                 const token = document.querySelector(
                     'input[name="__RequestVerificationToken"]'
                 ).value;
@@ -334,6 +566,7 @@
                     body: JSON.stringify(
                         {
                             total: total,
+                            metodoPago: metodoPagoInput.value,
                             productos: productos
                         }
                     )
@@ -352,6 +585,22 @@
 
                     if (data.success) {
                         alert("Factura generada correctamente.");
+
+                        input.value = "";
+
+                        productoInput.value = "";
+
+                        document.getElementById("cantidad").value = "";
+
+                        precioInput.value = "";
+
+                        list.innerHTML = "";
+
+                        productos = [ ];
+                        actualizarTabla();
+                        calcularTotales();
+                        return;
+
                     } else {
                         alert(data.message || "No se pudo generar la factura.");
                     }
@@ -483,6 +732,20 @@
         text-align: right;
         margin-top: 20px;
     }
+
+    .btn-eliminar {
+        background: transparent;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        font-size: 18px;
+        padding: 6px 10px;
+    }
+
+        .btn-eliminar:hover {
+            color: #a71d2a;
+            transform: scale(1.1);
+        }
 
 </style>
 </html>

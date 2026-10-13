@@ -166,6 +166,9 @@ namespace proyectoFeelings.Migrations
                     b.Property<DateTime>("Datetime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StoreID")
                         .HasColumnType("int");
 
@@ -333,6 +336,9 @@ namespace proyectoFeelings.Migrations
 
                     b.Property<int?>("NewUserStoreId")
                         .HasColumnType("int");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ProductID")
                         .HasColumnType("int");
