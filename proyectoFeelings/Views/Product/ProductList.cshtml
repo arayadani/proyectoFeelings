@@ -2,6 +2,9 @@
 <link rel="stylesheet"
       href="https://cdn.datatables.net/3.0.2/css/dataTables.dataTables.css" />
 
+   <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -50,14 +53,19 @@
                 <td>@(product.Provider)</td>
                 <td>@(product.Status ? "Activo" : "Inactivo")</td>
                 <td>
-                    <a asp-controller="Product"
-                       asp-action="EditProduct"
-                       asp-route-productId="@(product.ProductID)"
-                       asp-route-storeId="@(product.StoreID)"
-                       class="btn btn-warning btn-sm">
-                        Editar
-                    </a>
-
+              <a asp-controller="Product"
+           asp-action="EditProduct"
+           asp-route-productId="@(product.ProductID)"
+           asp-route-storeId="@(product.StoreID)"
+           class="btn btn-warning btn-sm"
+           title="Editar">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="16" height="16"
+                 fill="currentColor"
+                 viewBox="0 0 16 16">
+                <path d="M12.854.146a.5.5 0 0 0-.707 0L11.5.793l3.707 3.707.647-.647a.5.5 0 0 0 0-.707zM10.793 1.5 1 11.293V15h3.707L14.5 5.207z"/>
+            </svg>
+        </a>
                 </td>
 
 

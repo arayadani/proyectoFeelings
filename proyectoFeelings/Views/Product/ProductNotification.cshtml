@@ -1,127 +1,427 @@
-﻿@model List<proyectoFeelings.ViewModels.RecordViewModel>
+﻿
+@model List<proyectoFeelings.ViewModels.RecordViewModel>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-        </button>
-    </div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-        </button>
-    </div>
-}
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" />
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Tienda actual</th>
-            <th>Tienda destino</th>
-            <th>Codigo</th>
-            <th>Descripcion</th>
-            <th>Cantidad</th>
-            <th>Proveedor</th>
-            <th>Precio</th>
-            <th>Categoria</th>
-            <th>Fecha de la notificacion</th>
-            <th>Comentario</th>
+<style>
+    .records-card {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
 
+    .records-header {
+        background: #0d6efd;
+        color: white;
+        padding: 16px 20px;
+    }
 
+    .records-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
 
-        </tr>
-    </thead>
-    <tbody>
+    .records-body {
+        padding: 20px;
+    }
 
-  @foreach (var record in Model)
-        {
-            <tr>
-                <td>
-                    @(record.Type == 1 ? "Traslado" :
-                          record.Type == 2 ? "ROP" :
-                          "Otro")
-                </td>
+    #recordsTable {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
 
-                <td>
-                    @(record.CurrentStoreName)
-                </td>
-                <td>
-                    @(record.NewStoreName==null? "N/A":
-                    record.NewStoreName)
-                </td>
-                <td>@(record.Code)</td>
-                <td>@(record.Description)</td>
-                @if (record.Type == 1)
-                {
-                    <td>@(record.Quantity - record.NewQuantity)</td>
-                }
-                else
-                {
-                    <td>@(record.Quantity)</td>
-                }
-                <td>@(record.Provider)</td>
-                <td>@(record.Price)</td>
-                <td>@(record.Category)</td>
-                <td>@(record.DateTime.ToString("dd/MM/yyyy"))</td>
-                <td>@(record.Comment)</td>
+    #recordsTable thead th {
+        background: #e9ecef;
+        color: #212529;
+        font-weight: 600;
+        white-space: nowrap;
+        border: 1px solid #dee2e6 !important;
+        padding: 11px 9px;
+    }
 
+    #recordsTable tbody td {
+        border: 1px solid #dee2e6 !important;
+        padding: 10px;
+        vertical-align: middle;
+    }
 
-                @if (record.Type == 1)
-                {
-                    <td>
-                        <a asp-controller="Product"
-                           asp-action="ApproveMove"
-                           asp-route-ProductID="@record.ProductID"
-                           asp-route-CurrentStoreID="@record.CurrentStoreID"
-                           asp-route-NewStoreID="@record.NewStoreID"
-                           asp-route-Quantity="@record.Quantity"
-                           asp-route-NewQuantity="@record.NewQuantity"
-                           asp-route-Code="@record.Code"
-                           asp-route-Description="@record.Description"
-                           asp-route-Provider="@record.Provider"
-                           asp-route-Price="@record.Price"
-                           asp-route-Category="@record.Category"
-                           class="btn btn-success btn-sm">
-                            Aprobar
-                        </a>
-                    </td>
-                    <td>
-                        <a asp-controller="Product"
-                           asp-action="RejectMove"
-                           asp-route-ProductID="@record.ProductID"
-                           asp-route-StoreID="@record.CurrentStoreID"
-                           asp-route-Type="@record.Type"
-                           class="btn btn-danger btn-sm">
-                            Declinar
-                        </a>
-                    </td>
-                }
-                @if (record.Type == 2)
-                {
-                    <td>
-                        <a asp-controller="Product"
-                           asp-action="AckNotification"
-                           asp-route-ProductID="@record.ProductID"
-                           asp-route-StoreID="@record.CurrentStoreID"
-                           asp-route-Type="@record.Type"
-                           class="btn btn-success btn-sm">
-                            Entendido
-                        </a>
-                    </td>
-                    
-                }
-                
-               
-            </tr>
+    #recordsTable tbody tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+
+    #recordsTable tbody tr:hover {
+        background: #e7f1ff;
+    }
+
+    #recordsTable thead .filters-row th {
+        background: #f8f9fa;
+        padding: 6px;
+    }
+
+    #recordsTable .column-filter {
+        width: 100%;
+        min-width: 85px;
+        box-sizing: border-box;
+        padding: 6px;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        background: white;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+    .record-type {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .type-transfer {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .type-rop {
+        background: #fff3cd;
+        color: #664d03;
+    }
+
+    .type-other {
+        background: #e2e3e5;
+        color: #41464b;
+    }
+
+    .record-action {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .record-approve {
+        background: #198754;
+        color: white;
+    }
+
+    .record-approve:hover {
+        background: #157347;
+        color: white;
+    }
+
+    .record-reject {
+        background: #dc3545;
+        color: white;
+    }
+
+    .record-reject:hover {
+        background: #bb2d3b;
+        color: white;
+    }
+
+    .record-acknowledge {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .record-acknowledge:hover {
+        background: #e0a800;
+        color: #212529;
+    }
+
+    .records-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .records-toolbar p {
+        margin: 4px 0 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .btn-clear-filters {
+        background: #6c757d;
+        color: white;
+        border: 0;
+        border-radius: 5px;
+        padding: 7px 12px;
+    }
+
+    .btn-clear-filters:hover {
+        background: #5c636a;
+    }
+
+    .dataTables_wrapper .dt-search input,
+    .dataTables_wrapper .dt-length select {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        padding: 6px 9px;
+    }
+
+    @@media (max-width: 768px) {
+        .records-body {
+            padding: 10px;
         }
-    </tbody>
-</table>
+
+        .records-header {
+            padding: 14px;
+        }
+    }
+</style>
+
+<div class="container-fluid mt-4 mb-4">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
+    <div class="records-card">
+
+        <div class="records-header">
+            <h3>Administración de registros y notificaciones</h3>
+        </div>
+
+        <div class="records-body">
+
+            <div class="records-toolbar">
+                <div>
+                    <strong>Listado de registros</strong>
+                    <p>Consultá los traslados y las notificaciones de productos.</p>
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Tienda actual</th>
+                            <th>Tienda destino</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>Proveedor</th>
+                            <th>Precio</th>
+                            <th>Categoría</th>
+                            <th>Fecha de la notificación</th>
+                            <th>Comentario</th>
+                            <th>Acciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+                        @foreach (var record in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @if (record.Type == 1)
+                                    {
+                                        <span class="record-type type-transfer">Traslado</span>
+                                    }
+                                    else if (record.Type == 2)
+                                    {
+                                        <span class="record-type type-rop">ROP</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="record-type type-other">Otro</span>
+                                    }
+                                </td>
+
+                                <td>@record.CurrentStoreName</td>
+                                <td>@(record.NewStoreName == null ? "N/A" : record.NewStoreName)</td>
+                                <td>@record.Code</td>
+                                <td>@record.Description</td>
+
+                                @if (record.Type == 1)
+                                {
+                                    <td>@(record.Quantity - record.NewQuantity)</td>
+                                }
+                                else
+                                {
+                                    <td>@record.Quantity</td>
+                                }
+
+                                <td>@record.Provider</td>
+                                <td>@record.Price</td>
+                                <td>@record.Category</td>
+                                <td>@record.DateTime.ToString("dd/MM/yyyy")</td>
+                                <td>@record.Comment</td>
+
+                                <td>
+                                    @if (record.Type == 1)
+                                    {
+                                        <div class="d-flex gap-2">
+                                            <a asp-controller="Product"
+                                               asp-action="ApproveMove"
+                                               asp-route-ProductID="@record.ProductID"
+                                               asp-route-CurrentStoreID="@record.CurrentStoreID"
+                                               asp-route-NewStoreID="@record.NewStoreID"
+                                               asp-route-Quantity="@record.Quantity"
+                                               asp-route-NewQuantity="@record.NewQuantity"
+                                               asp-route-Code="@record.Code"
+                                               asp-route-Description="@record.Description"
+                                               asp-route-Provider="@record.Provider"
+                                               asp-route-Price="@record.Price"
+                                               asp-route-Category="@record.Category"
+                                               class="record-action record-approve">
+                                                Aprobar
+                                            </a>
+
+                                            <a asp-controller="Product"
+                                               asp-action="RejectMove"
+                                               asp-route-ProductID="@record.ProductID"
+                                               asp-route-StoreID="@record.CurrentStoreID"
+                                               asp-route-Type="@record.Type"
+                                               class="record-action record-reject">
+                                                Declinar
+                                            </a>
+                                        </div>
+                                    }
+
+                                    @if (record.Type == 2)
+                                    {
+                                        <a asp-controller="Product"
+                                           asp-action="AckNotification"
+                                           asp-route-ProductID="@record.ProductID"
+                                           asp-route-StoreID="@record.CurrentStoreID"
+                                           asp-route-Type="@record.Type"
+                                           class="record-action record-acknowledge">
+                                            Entendido
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const table = new DataTable('#recordsTable', {
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50, 100],
+            order: [[9, 'desc']],
+            searching: true,
+            ordering: true,
+            autoWidth: false,
+            scrollX: true,
+
+            columnDefs: [
+                {
+                    targets: 11,
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+
+            language: {
+                search: "Buscar en todos los campos:",
+                searchPlaceholder: "Escribí para buscar...",
+                lengthMenu: "Mostrar _MENU_ registros",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                infoEmpty: "No hay registros",
+                infoFiltered: "(filtrado de _MAX_ registros)",
+                zeroRecords: "No se encontraron resultados",
+                emptyTable: "No hay registros para mostrar",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            },
+
+            initComplete: function () {
+                const api = this.api();
+
+                document.querySelectorAll(
+                    '#recordsTable thead .filters-row .column-filter'
+                ).forEach(function (filter, index) {
+
+                    filter.addEventListener('click', function (event) {
+                        event.stopPropagation();
+                    });
+
+                    function applyFilter() {
+                        const value = this.value;
+
+                        // El filtro de Tipo usa coincidencia exacta.
+                        if (index === 0 && value !== '') {
+                            api.column(index).search(
+                                '^' + value + '$',
+                                { regex: true, smart: false }
+                            ).draw();
+                        } else {
+                            api.column(index).search(value).draw();
+                        }
+                    }
+
+                    filter.addEventListener('input', applyFilter);
+                    filter.addEventListener('change', applyFilter);
+                });
+            }
+        });
+
+        document.getElementById('clearRecordFilters')
+            .addEventListener('click', function () {
+
+                table.search('');
+
+                table.columns().every(function () {
+                    this.search('');
+                });
+
+                document.querySelectorAll(
+                    '#recordsTable .column-filter'
+                ).forEach(function (filter) {
+                    filter.value = '';
+                });
+
+                table.order([[9, 'desc']]).draw();
+            });
+    });
+</script>

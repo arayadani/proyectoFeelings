@@ -1,47 +1,76 @@
-﻿@model proyectoFeelings.Models.Store
+﻿
+@model proyectoFeelings.Models.Store
 
 @{
     ViewData["Title"] = "Editar tienda";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container mt-4 mb-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 650px;">
 
-<form asp-action="EditStore" method="post">
+        <div class="card-header bg-primary text-white py-2">
+            <h5 class="mb-0">Editar tienda</h5>
+        </div>
 
-    <input asp-for="StoreID" type="hidden" />
+        <div class="card-body p-3">
 
-    <div class="mb-3">
-        <label asp-for="StoreName" class="form-label">Nombre de la tienda</label>
-        <input asp-for="StoreName" class="form-control" />
-        <span asp-validation-for="StoreName" class="text-danger"></span>
+            <form asp-action="EditStore" method="post">
+
+                <input asp-for="StoreID" type="hidden" />
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="StoreName" class="form-label small mb-1">
+                            Nombre de la tienda
+                        </label>
+                        <input asp-for="StoreName" class="form-control form-control-sm" />
+                        <span asp-validation-for="StoreName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Location" class="form-label small mb-1">
+                            Ubicación
+                        </label>
+                        <input asp-for="Location" class="form-control form-control-sm" />
+                        <span asp-validation-for="Location" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="PhoneNumber" class="form-label small mb-1">
+                            Número de teléfono
+                        </label>
+                        <input asp-for="PhoneNumber" class="form-control form-control-sm" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check mt-3">
+                            <input asp-for="Status" class="form-check-input" />
+                            <label asp-for="Status" class="form-check-label small">
+                                Activo
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="my-3" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="StoreList" class="btn btn-secondary btn-sm">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        Guardar cambios
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Location" class="form-label">Ubicacion</label>
-        <input asp-for="Location" class="form-control" />
-        <span asp-validation-for="Location" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label">Numero de telefono</label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-
-    <div class="form-check mb-3">
-        <input asp-for="Status" class="form-check-input" />
-        <label asp-for="Status" class="form-check-label">Activo</label>
-    </div>
-
-    <button type="submit" class="btn btn-primary">
-        Editar
-    </button>
-
-    <a asp-action="StoreList" class="btn btn-secondary">
-        Cancelar
-    </a>
-
-</form>
+</div>
 
 @section Scripts {
     @{

@@ -1,10 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@model proyectoFeelings.ViewModels.BillingViewModel
+<!DOCTYPE html>
 <html lang="es">
 <head>
+
+    @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+
+@inject proyectoFeelings.Data.AppDbContext _context
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <title>Facturación</title>
 </head>
 
@@ -21,11 +27,11 @@
 
                 <label>Producto</label>
                 <input
-                    type="text"
-                    id="productInput"
-                    list="productList"
-                    autocomplete="off"
-                    placeholder="Buscar código..."
+                type="text"
+                id="productInput"
+                list="productList"
+                autocomplete="off"
+                placeholder="Buscar código..."
                 >
             </div>
             <datalist id="productList">
@@ -74,7 +80,7 @@
         <!-- Botón ingresar -->
         <div class="button-container">
             <button type="button" class="btn-ingresar" onclick="agregarProducto()">
-                INGRESAR
+                Ingresar
             </button>
         </div>
 
@@ -120,14 +126,29 @@
         <div class="facturar-container">
 
             <button type="button"
-                    class="btn-facturar"
-                    onclick="facturar()">
+            class="btn-facturar"
+            onclick="facturar()">
                 Generar e imprimir factura
             </button>
 
         </div>
 
     </div>
+
+
+    @{
+            var ultimoNumero = await _context.Invoice
+                                .OrderByDescending(x => x.InvoiceId)
+                                .Select(x => (int?)x.InvoiceId)
+                    .FirstOrDefaultAsync();
+
+            var numeroFactura2 = ultimoNumero.HasValue
+                    ? ultimoNumero.Value + 1
+                    : 1000;
+
+            var  storeName = Model.StoreName;       
+
+    }
 
 
     <script>
@@ -382,7 +403,10 @@
                 })[caracter]);
 
             const fecha = new Date().toLocaleString("es-CR");
-            const numeroFactura = Date.now().toString();
+
+            var numeroFactura = @numeroFactura2;
+         const storeName = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StoreName));
+        const storePhone = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StorePhone));
 
             // Calculate the total from the product list
             const total2 = productos.reduce(
@@ -489,11 +513,12 @@
                 </head>
 
                 <body>
-                    <div class="encabezado">
-                        <div>
-                            <h1>FACTURA</h1>
-                            <p>Gracias por su compra.</p>
-                        </div>
+                        <div class="encabezado">
+                    <div>
+                        <h1>Tienda Feelings: @Model.StoreName</h1>
+                        <h2>Numero de telefono: @Model.StorePhone</h2>
+                        <p>Gracias por su compra.</p>
+                    </div>
 
                         <div class="datos">
                             <strong>Número:</strong> ${numeroFactura}<br>

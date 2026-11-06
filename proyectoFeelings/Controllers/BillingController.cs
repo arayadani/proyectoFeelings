@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyectoFeelings.Data;
 using proyectoFeelings.Models;
+using proyectoFeelings.ViewModels;
 using System.Text.Json;
 
 namespace proyectoFeelings.Controllers
@@ -29,9 +30,20 @@ namespace proyectoFeelings.Controllers
 
 
         [HttpGet]
-        public IActionResult GeneralBilling()
+        public async Task<IActionResult> GeneralBillingAsync()
         {
-            return View();
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+            var store = await _context.Store.FirstOrDefaultAsync(s => s.StoreID == storeId);
+            var model = new BillingViewModel
+
+            {
+
+                StoreName = store?.StoreName,
+                StorePhone = store?.PhoneNumber,
+            };
+
+            return View(model);
         }
 
         [HttpGet]
