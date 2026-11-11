@@ -1,0 +1,305 @@
+﻿
+@model List<proyectoFeelings.ViewModels.ProductViewModel>
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" />
+
+<style>
+    .products-card {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .products-header {
+        background: #0d6efd;
+        color: white;
+        padding: 16px 20px;
+    }
+
+    .products-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .products-body {
+        padding: 20px;
+    }
+
+    #productsTable {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    #productsTable thead th {
+        background: #e9ecef;
+        color: #212529;
+        font-weight: 600;
+        white-space: nowrap;
+        border: 1px solid #dee2e6 !important;
+        padding: 12px 10px;
+    }
+
+    #productsTable tbody td {
+        border: 1px solid #dee2e6 !important;
+        padding: 10px;
+        vertical-align: middle;
+    }
+
+    #productsTable tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    #productsTable tbody tr:hover {
+        background-color: #e7f1ff;
+    }
+
+    .product-status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .product-active {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .product-inactive {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .product-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: none;
+        border-radius: 5px;
+        padding: 7px 10px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .product-move {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .product-move:hover {
+        background: #e0a800;
+        color: #212529;
+    }
+
+    .product-edit {
+        background: #0d6efd;
+        color: white;
+        min-width: 36px;
+        min-height: 32px;
+    }
+
+    .product-edit:hover {
+        background: #0b5ed7;
+        color: white;
+    }
+
+    .products-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .products-toolbar p {
+        margin: 4px 0 0;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+
+    .dataTables_wrapper .dt-search input,
+    .dataTables_wrapper .dt-length select {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        padding: 6px 9px;
+    }
+
+    .dataTables_wrapper .dt-search input {
+        margin-left: 6px;
+    }
+
+    .alert {
+        border-radius: 8px;
+    }
+
+    @@media (max-width: 768px) {
+        .products-body {
+            padding: 12px;
+        }
+
+        .products-header {
+            padding: 14px;
+        }
+    }
+</style>
+
+<div class="container-fluid mt-4 mb-4">
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
+    <div class="products-card">
+
+        <div class="products-header">
+            <h3>Productos disponibles a rebajar</h3>
+        </div>
+
+        <div class="products-body">
+
+            <div class="products-toolbar">
+                <div>
+                    <strong>Listado de productos disponibles</strong>
+                    <p>Consulta y rebaja los productos registrados.</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle"
+                       id="productsTable">
+
+                    <thead>
+                        <tr>
+                            <th>Tienda</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <th></th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var product in Model)
+                        {
+                            <tr>
+                                <td>@product.StoreName</td>
+                                <td>@product.Code</td>
+                                <td>@product.Description</td>
+                                <td>@product.Quantity</td>
+
+                               
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <td>
+                    <a asp-controller="Product"
+                       asp-action="ProductReduction"
+                       asp-route-productId="@product.ProductID"
+                       asp-route-storeId="@product.StoreID"
+                       class="product-action"
+                       style="background-color: #0d6efd; color: #212529;"
+                       title="Rebajar">
+
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="yellow">
+                            <path d="M6 0h4v9h4l-6 7-6-7h4z"/>
+                        </svg>
+                    </a>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const hasAdminRole = @User.IsInRole("Admin").ToString().ToLower();
+
+        const actionColumns = [];
+
+        if (hasAdminRole) {
+            actionColumns.push(hasUserRole ? 9 : 8);
+        }
+
+        new DataTable('#productsTable', {
+            pageLength: 10,
+
+            lengthMenu: [5, 10, 25, 50, 100],
+
+            order: [[1, 'asc']],
+
+            searching: true,
+            ordering: true,
+            autoWidth: false,
+            scrollX: true,
+
+            language: {
+                search: "Buscar:",
+                searchPlaceholder: "Buscar productos...",
+                lengthMenu: "Mostrar _MENU_ registros",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ productos",
+                infoEmpty: "No hay registros",
+                infoFiltered: "(filtrado de _MAX_ productos)",
+                zeroRecords: "No se encontraron resultados",
+                emptyTable: "No hay productos registrados",
+
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            },
+
+            columnDefs: [
+                {
+                    orderable: false,
+                    searchable: false,
+                    targets: actionColumns
+                }
+            ]
+        });
+
+    });
+</script>

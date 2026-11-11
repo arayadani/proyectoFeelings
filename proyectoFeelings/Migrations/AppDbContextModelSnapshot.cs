@@ -349,6 +349,9 @@ namespace proyectoFeelings.Migrations
                     b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("ReductionReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("Status")
                         .HasColumnType("bit");
 

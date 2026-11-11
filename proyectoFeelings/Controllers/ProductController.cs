@@ -551,5 +551,64 @@ namespace proyectoFeelings.Controllers
             return RedirectToAction(nameof(ProductNotification));
 
         }
+        //General reduction
+        [HttpGet]
+        public async Task<IActionResult> GeneralReduction()
+
+        {
+            var currentUser = await userManager.GetUserAsync(User);
+            var storeId = (currentUser)?.StoreID;
+
+            var Products = _context.Product
+        .SelectMany(p => p.StoreProduct
+            .Where(sp => sp.StoreID != storeId)
+            .Select(sp => new ProductViewModel
+            {
+                ProductID = p.ProductID,
+                Code = p.Code,
+                Description = p.Description,
+                StoreID = sp.StoreID,
+                Quantity = sp.Quantity,
+                StoreName = sp.Store.StoreName
+            }))
+        .ToList();
+
+            return View(Products);
+
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ProductReduction(int productId, int storeId)
+
+        {
+
+            if (productId == null || storeId == null)
+            {
+                return NotFound();
+            }
+            var product = await _context.Product.FindAsync(productId);
+            var storeProduct = await _context.StoreProduct.FindAsync(productId, storeId);
+
+            if (storeProduct == null)
+            {
+                return NotFound();
+
+            }
+
+            var model = new ProductViewModel
+            {
+                ProductID = product.ProductID,
+                Code = product.Code,
+                Description = product.Description,
+                StoreID = storeProduct.StoreID, // Assuming you want the StoreID from the first StoreProduct
+                Quantity = storeProduct.Quantity,
+
+
+            };
+
+            return View(model);
+
+        }
     }
 }
